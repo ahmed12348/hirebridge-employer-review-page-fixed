@@ -1,0 +1,119 @@
+<section class="candidate-page">
+  <article class="cb-hero fade-in-up">
+    <div>
+      <p class="cb-eyebrow">Candidate Jobs</p>
+      <h1>Find your best-fit opportunities.</h1>
+      <p>
+        Review matched roles, filter by location and status, then apply directly from this board.
+      </p>
+
+      <div class="hero-actions">
+        <button type="button" class="cb-btn cb-btn-primary" (click)="reloadJobs()">
+          <i class="fas fa-rotate-right"></i>
+          Refresh Matches
+        </button>
+      </div>
+    </div>
+
+    <aside class="filters-card">
+      <input type="text" [(ngModel)]="searchTerm" placeholder="Search role, company, location" />
+      <select [(ngModel)]="statusFilter">
+        <option value="all">All statuses</option>
+        <option value="active">Active</option>
+        <option value="applied">Applied</option>
+        <option value="rejected">Rejected</option>
+      </select>
+      <select [(ngModel)]="locationFilter">
+        <option value="all">All locations</option>
+        <option value="remote">Remote</option>
+        <option value="onsite">On-site</option>
+        <option value="hybrid">Hybrid</option>
+      </select>
+    </aside>
+  </article>
+
+  <section class="cb-kpis fade-in-up delay-1">
+    <article class="cb-kpi">
+      <span class="cb-kpi-line blue"></span>
+      <div>
+        <p>Matched Jobs</p>
+        <h2>{{ filteredJobs.length }}</h2>
+        <small>Filtered opportunities list.</small>
+      </div>
+    </article>
+    <article class="cb-kpi">
+      <span class="cb-kpi-line green"></span>
+      <div>
+        <p>Remote Roles</p>
+        <h2>{{ remoteCount }}</h2>
+        <small>Remote-friendly positions.</small>
+      </div>
+    </article>
+    <article class="cb-kpi">
+      <span class="cb-kpi-line amber"></span>
+      <div>
+        <p>Applied Roles</p>
+        <h2>{{ appliedCount }}</h2>
+        <small>Applications already submitted.</small>
+      </div>
+    </article>
+    <article class="cb-kpi">
+      <span class="cb-kpi-line red"></span>
+      <div>
+        <p>Open Now</p>
+        <h2>{{ activeCount }}</h2>
+        <small>Jobs ready for apply.</small>
+      </div>
+    </article>
+  </section>
+
+  <article *ngIf="successMessage" class="cb-success-box">{{ successMessage }}</article>
+  <article *ngIf="error" class="cb-error">{{ error }}</article>
+  <article *ngIf="loading" class="cb-empty">Loading matches...</article>
+
+  <article *ngIf="!loading && filteredJobs.length > 0" class="cb-panel fade-in-up delay-2">
+    <header class="cb-panel-head">
+      <div>
+        <p class="cb-eyebrow">Matched Roles</p>
+        <h3>Apply from your jobs board</h3>
+      </div>
+    </header>
+
+    <div class="cb-table">
+      <div class="cb-table-head jobs-grid">
+        <span>Role</span>
+        <span>Match</span>
+        <span>Status</span>
+        <span>Action</span>
+      </div>
+
+      <article class="cb-table-row jobs-grid" *ngFor="let job of filteredJobs">
+        <div class="job-main">
+          <strong>{{ job.title || 'Job opening' }}</strong>
+          <small>{{ job.companyName || 'HireBridge Partner' }} • {{ job.location || job.workType || 'Remote' }}</small>
+        </div>
+
+        <strong class="score">{{ job.matchScore || 0 }}%</strong>
+
+        <span class="cb-badge" [class.cb-badge-primary]="!job.applied" [class.cb-badge-accepted]="job.applied">
+          {{ job.applied ? 'Applied' : (job.status || 'Open') }}
+        </span>
+
+        <button
+          type="button"
+          class="cb-btn"
+          [class.cb-btn-soft]="job.applied"
+          [class.cb-btn-primary]="!job.applied"
+          [disabled]="job.applied || applyingJobId === getJobKey(job)"
+          (click)="apply(job)"
+        >
+          {{ job.applied ? 'Applied' : 'Apply' }}
+        </button>
+      </article>
+    </div>
+  </article>
+
+  <article *ngIf="!loading && filteredJobs.length === 0" class="cb-empty">
+    No job matches found yet.
+  </article>
+</section>

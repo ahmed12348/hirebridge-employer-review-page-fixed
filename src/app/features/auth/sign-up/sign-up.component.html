@@ -1,0 +1,88 @@
+<div class="auth-shell">
+  <section class="brand-header">
+    <div class="brand-mark">HB</div>
+    <h1>HireBridge</h1>
+    <p>Enterprise hiring and career workflows redefined</p>
+  </section>
+
+  <section class="auth-card wide-card">
+    <div class="card-header">
+      <h2>Create account</h2>
+      <p>Set up your access and continue to the next step</p>
+    </div>
+
+    <form (ngSubmit)="submit()" class="form two-column">
+      <div class="field-block full">
+        <label for="signup-name">Full Name</label>
+        <div class="field with-icon">
+          <i class="fas fa-user"></i>
+          <input id="signup-name" placeholder="Your full name" [(ngModel)]="name" name="name" (blur)="onBlur('name')" />
+        </div>
+        <div class="error" *ngIf="touched.name && isEmpty(name)">Full name is required</div>
+      </div>
+
+      <div class="field-block">
+        <label for="signup-email">Email</label>
+        <div class="field with-icon">
+          <i class="fas fa-envelope"></i>
+          <input id="signup-email" type="email" placeholder="name@example.com" [(ngModel)]="email" name="email" (blur)="onBlur('email')" />
+        </div>
+        <div class="error" *ngIf="touched.email && isEmpty(email)">Email is required</div>
+      </div>
+
+      <div class="field-block">
+        <label for="signup-phone">Phone Number</label>
+        <div class="field with-icon">
+          <i class="fas fa-phone"></i>
+          <input id="signup-phone" placeholder="+20 100 000 0000" [(ngModel)]="phone" name="phone" (blur)="onBlur('phone')" />
+        </div>
+        <div class="error" *ngIf="touched.phone && isEmpty(phone)">Phone is required</div>
+      </div>
+
+      <div class="field-block">
+        <label for="signup-password">Password</label>
+        <div class="field with-icon">
+          <i class="fas fa-lock"></i>
+          <input id="signup-password" type="password" placeholder="Create a secure password" [(ngModel)]="password" name="password" (blur)="onBlur('password')" />
+        </div>
+        <div class="error" *ngIf="touched.password && isEmpty(password)">Password is required</div>
+      </div>
+
+      <div class="field-block">
+        <label for="signup-confirm-password">Confirm Password</label>
+        <div class="field with-icon">
+          <i class="fas fa-shield-halved"></i>
+          <input id="signup-confirm-password" type="password" placeholder="Repeat your password" [(ngModel)]="confirmPassword" name="confirmPassword" (blur)="onBlur('confirmPassword')" />
+        </div>
+        <div class="error" *ngIf="touched.confirmPassword && isEmpty(confirmPassword)">Confirm your password</div>
+      </div>
+
+      <div class="field-block full">
+        <div class="error shake" *ngIf="touched.confirmPassword && password !== confirmPassword">Passwords do not match</div>
+        <div class="error shake" *ngIf="errorMsg">{{ errorMsg }}</div>
+      </div>
+
+      <div class="field-block full">
+        <button type="submit" class="primary-btn" [disabled]="loading">
+          <span *ngIf="!loading">Create Account <i class="fas fa-arrow-right"></i></span>
+          <span *ngIf="loading" class="loader"></span>
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <div class="auth-link-row">
+    <span>Already registered?</span>
+    <a routerLink="/login">Log in to your account</a>
+  </div>
+
+  <footer class="page-footer">
+    <span>&copy; 2026 HireBridge. All rights reserved.</span>
+    <nav>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Security</a>
+      <a href="#">Contact Support</a>
+    </nav>
+  </footer>
+</div>

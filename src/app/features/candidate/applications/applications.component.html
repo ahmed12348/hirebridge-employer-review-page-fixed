@@ -1,0 +1,111 @@
+<section class="candidate-page">
+  <article class="cb-hero fade-in-up">
+    <div>
+      <p class="cb-eyebrow">My Applications</p>
+      <h1>Track and manage your application decisions.</h1>
+      <p>
+        Filter by status or search by job and company, then update your own decision using Accept or Reject.
+      </p>
+    </div>
+
+    <aside class="filter-side">
+      <input type="text" [(ngModel)]="searchTerm" placeholder="Search role, company, interview" />
+      <select [(ngModel)]="statusFilter">
+        <option value="all">All statuses</option>
+        <option value="applied">Applied</option>
+        <option value="under_review">Under Review</option>
+        <option value="shortlisted">Shortlisted</option>
+        <option value="interview_scheduled">Interview Scheduled</option>
+        <option value="accepted">Accepted</option>
+        <option value="hired">Hired</option>
+        <option value="rejected">Rejected</option>
+      </select>
+    </aside>
+  </article>
+
+  <article *ngIf="actionMessage" class="cb-success-box">{{ actionMessage }}</article>
+  <article *ngIf="error" class="cb-error">{{ error }}</article>
+
+  <article *ngIf="loading" class="cb-empty">Loading applications...</article>
+
+  <article *ngIf="!loading && filteredApplications.length > 0" class="cb-panel fade-in-up delay-1">
+    <header class="cb-panel-head">
+      <div>
+        <p class="cb-eyebrow">Pipeline Rows</p>
+        <h3>{{ filteredApplications.length }} applications</h3>
+      </div>
+    </header>
+
+    <div class="cb-table">
+      <div class="cb-table-head applications-grid">
+        <span class="col-role">Role</span>
+        <span class="col-status">Status</span>
+        <span class="col-interview">Interview</span>
+        <span class="col-date">Date</span>
+        <span class="col-actions">Actions</span>
+      </div>
+
+      <article class="cb-table-row applications-grid app-row" *ngFor="let app of filteredApplications">
+        <div class="role-cell col-role">
+          <strong>{{ app.jobTitle || 'Role not available' }}</strong>
+          <small>{{ app.companyName || 'Company unavailable' }}</small>
+          <small *ngIf="app.fitScore">Fit score: {{ app.fitScore }}%</small>
+        </div>
+
+        <div class="status-cell col-status">
+          <span class="cb-badge" [class.cb-badge-accepted]="normalizeStatus(app.status) === 'accepted' || normalizeStatus(app.status) === 'hired'" [class.cb-badge-rejected]="normalizeStatus(app.status) === 'rejected'" [class.cb-badge-pending]="normalizeStatus(app.status) !== 'accepted' && normalizeStatus(app.status) !== 'hired' && normalizeStatus(app.status) !== 'rejected'" [class.cb-badge-primary]="normalizeStatus(app.status) === 'interview_scheduled'">
+            {{ getStatusLabel(app.status) }}
+          </span>
+        </div>
+
+        <div class="interview-cell col-interview" *ngIf="app.interview as interview; else noInterview">
+          <strong>{{ interview.date | date:'mediumDate' }} • {{ interview.time }}</strong>
+          <small>{{ interview.type }} • {{ getInterviewStatusLabel(app) }}</small>
+          <a *ngIf="interview.meetingLink" [href]="interview.meetingLink" target="_blank" rel="noreferrer">Open meeting link</a>
+        </div>
+        <ng-template #noInterview>
+          <div class="interview-cell col-interview muted-block">
+            <small class="muted">No interview yet</small>
+          </div>
+        </ng-template>
+
+        <span class="date-cell col-date">{{ app.createdAt ? (app.createdAt | date:'mediumDate') : 'Recently' }}</span>
+
+        <div class="action-group col-actions" [class.final-state]="!canDecide(app)">
+          <ng-container *ngIf="canDecide(app); else finalDecisionState">
+            <button
+              type="button"
+              class="cb-btn decision-btn decision-btn-reject"
+              (click)="reject(app)"
+            >
+              <i class="fas fa-xmark"></i>
+              Reject
+            </button>
+            <button
+              type="button"
+              class="cb-btn decision-btn decision-btn-accept"
+              (click)="accept(app)"
+            >
+              <i class="fas fa-check"></i>
+              Accept
+            </button>
+          </ng-container>
+
+          <ng-template #finalDecisionState>
+            <span
+              class="decision-lock"
+              [class.accepted]="normalizeStatus(app.status) === 'accepted' || normalizeStatus(app.status) === 'hired'"
+              [class.rejected]="normalizeStatus(app.status) === 'rejected'"
+            >
+              {{ normalizeStatus(app.status) === 'hired' ? 'Hired' : (normalizeStatus(app.status) === 'accepted' ? 'Accepted' : 'Rejected') }}
+            </span>
+          </ng-template>
+        </div>
+      </article>
+    </div>
+  </article>
+
+  <article *ngIf="!loading && filteredApplications.length === 0" class="cb-empty">
+    No applications match your filters.
+  </article>
+</section>

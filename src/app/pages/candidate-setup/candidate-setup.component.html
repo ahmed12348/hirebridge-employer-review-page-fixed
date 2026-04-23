@@ -1,0 +1,120 @@
+<div class="auth-shell">
+  <section class="brand-header">
+    <div class="brand-mark">HB</div>
+    <h1>HireBridge</h1>
+    <p>Enterprise hiring and career workflows redefined</p>
+  </section>
+
+  <section class="auth-card wide-card">
+    <div class="card-header" *ngIf="!success">
+      <h2>Candidate setup</h2>
+      <p>Complete your profile to unlock better role recommendations</p>
+    </div>
+
+    <div *ngIf="success" class="success-box">
+      <div class="success-icon"><i class="fas fa-check"></i></div>
+      <h2>Profile completed</h2>
+      <p>You are ready to start applying.</p>
+    </div>
+
+    <form *ngIf="!success" (ngSubmit)="submit()" class="form two-column">
+      <div class="field-block">
+        <label for="candidate-specialization">Specialization</label>
+        <div class="field with-icon">
+          <i class="fas fa-briefcase"></i>
+          <input id="candidate-specialization" placeholder="Frontend Developer" [(ngModel)]="candidate.specialization" name="specialization">
+        </div>
+        <div class="error" *ngIf="submitted && isEmpty(candidate.specialization)">Required</div>
+      </div>
+
+      <div class="field-block">
+        <label for="candidate-experience">Experience Level</label>
+        <div class="field with-icon">
+          <i class="fas fa-chart-line"></i>
+          <input id="candidate-experience" placeholder="Mid Level" [(ngModel)]="candidate.experienceLevel" name="experienceLevel">
+        </div>
+        <div class="error" *ngIf="submitted && isEmpty(candidate.experienceLevel)">Required</div>
+      </div>
+
+      <div class="field-block">
+        <label for="candidate-salary">Expected Salary</label>
+        <div class="field with-icon">
+          <i class="fas fa-money-bill-wave"></i>
+          <input id="candidate-salary" type="number" placeholder="15000" [(ngModel)]="candidate.expectedSalary" name="salary">
+        </div>
+        <div class="error" *ngIf="submitted && isEmpty(candidate.expectedSalary)">Required</div>
+      </div>
+
+      <div class="field-block">
+        <label for="candidate-work-type">Work Type</label>
+        <div class="field with-icon">
+          <i class="fas fa-laptop-house"></i>
+          <input id="candidate-work-type" placeholder="Remote / Hybrid" [(ngModel)]="candidate.workType" name="workType">
+        </div>
+        <div class="error" *ngIf="submitted && isEmpty(candidate.workType)">Required</div>
+      </div>
+
+      <div class="field-block">
+        <label for="candidate-status">Status</label>
+        <div class="field with-icon">
+          <i class="fas fa-signal"></i>
+          <input id="candidate-status" placeholder="Open to work" [(ngModel)]="candidate.status" name="status">
+        </div>
+        <div class="error" *ngIf="submitted && isEmpty(candidate.status)">Required</div>
+      </div>
+
+      <div class="field-block">
+        <label for="candidate-cv">CV URL</label>
+        <div class="field with-icon">
+          <i class="fas fa-link"></i>
+          <input id="candidate-cv" placeholder="https://example.com/cv.pdf" [(ngModel)]="candidate.cvUrl" name="cv">
+        </div>
+        <div class="error" *ngIf="submitted && isEmpty(candidate.cvUrl)">Required</div>
+      </div>
+
+      <div class="field-block full">
+        <label for="candidate-skill">Skills</label>
+        <div class="field with-icon">
+          <i class="fas fa-wand-magic-sparkles"></i>
+          <input
+            id="candidate-skill"
+            placeholder="Add skill and press Enter"
+            [(ngModel)]="skillInput"
+            name="skillInput"
+            (keydown.enter)="addSkill($event)"
+          />
+        </div>
+
+        <div class="tags">
+          <span *ngFor="let skill of skills; let i = index">
+            {{ skill }}
+            <button type="button" (click)="removeSkill(i)">&times;</button>
+          </span>
+        </div>
+
+        <div class="error" *ngIf="submitted && skills.length === 0">Add at least one skill</div>
+      </div>
+
+      <div class="field-block full">
+        <div class="error shake" *ngIf="errorMessage">{{ errorMessage }}</div>
+      </div>
+
+      <div class="field-block full">
+        <button type="submit" class="primary-btn" [disabled]="loading">
+          <span *ngIf="!loading">Save Profile <i class="fas fa-arrow-right"></i></span>
+          <span *ngIf="loading" class="loader"></span>
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <footer class="page-footer">
+    <span>© 2026 HireBridge. All rights reserved.</span>
+    <nav>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Security</a>
+      <a href="#">Contact Support</a>
+    </nav>
+  </footer>
+</div>

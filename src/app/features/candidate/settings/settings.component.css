@@ -1,0 +1,6 @@
+@import '../candidate-page.shared.css';
+
+.cb-kpi h2 {
+  font-size: 1.05rem;
+  overflow-wrap: anywhere;
+}

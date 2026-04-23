@@ -1,0 +1,154 @@
+<div class="job-details-page">
+  <ng-container *ngIf="job() as currentJob; else missingJob">
+    <section class="hero-card fade-in-up">
+      <div class="hero-copy">
+        <a routerLink="/admin/jobs" class="back-link">Back to jobs</a>
+        <p class="eyebrow">Admin Job Details</p>
+        <h1>{{ currentJob.title }}</h1>
+        <p class="hero-text">
+          Manage this request with a focused flow: search matching candidates, send shortlisted profiles, and track interview readiness.
+        </p>
+
+        <div class="hero-badges">
+          <span class="badge">{{ currentJob.company }}</span>
+          <span class="badge">{{ currentJob.location }}</span>
+          <span class="badge badge-strong">{{ currentJob.workType }}</span>
+        </div>
+
+        <div class="flow-row">
+          <span class="flow-pill">1. Match</span>
+          <span class="flow-pill">2. Send</span>
+          <span class="flow-pill">3. Interview</span>
+        </div>
+      </div>
+
+      <aside class="hero-summary slide-in-right">
+        <div class="summary-grid">
+          <div class="summary-item">
+            <span>Status</span>
+            <strong>{{ currentJob.status }}</strong>
+          </div>
+          <div class="summary-item">
+            <span>Open Roles</span>
+            <strong>{{ currentJob.openRoles }}</strong>
+          </div>
+          <div class="summary-item">
+            <span>Sent</span>
+            <strong>{{ sentCandidates().length }}</strong>
+          </div>
+          <div class="summary-item summary-progress">
+            <span>Progress</span>
+            <strong>{{ progress() }}%</strong>
+            <div class="progress-track" role="presentation">
+              <div class="progress-fill" [style.width.%]="progress()"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="quick-actions">
+          <button type="button" class="db-btn db-btn-primary quick-btn" (click)="searchMatchingCandidates()">
+            Search Matching Candidates
+          </button>
+          <button type="button" class="db-btn db-btn-soft quick-btn" (click)="openInterviews()">Open Interviews</button>
+        </div>
+      </aside>
+    </section>
+
+    <section class="content-grid fade-in-up delay-1">
+      <article class="surface-card stack-card">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Role Snapshot</p>
+            <h2>Core request information</h2>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <article class="stat-card">
+            <span>Budget</span>
+            <strong>{{ currentJob.budget | currency:'EGP ':'symbol':'1.0-0' }}</strong>
+          </article>
+          <article class="stat-card">
+            <span>Min Experience</span>
+            <strong>{{ currentJob.minExperience }} years</strong>
+          </article>
+          <article class="stat-card">
+            <span>Requested At</span>
+            <strong>{{ currentJob.requestedAt }}</strong>
+          </article>
+        </div>
+
+        <section class="skills-block" *ngIf="currentJob.skills.length">
+          <h3>Required skills</h3>
+          <div class="skills-row">
+            <span class="skill-pill" *ngFor="let skill of currentJob.skills">{{ skill }}</span>
+          </div>
+        </section>
+
+        <section class="timeline-block">
+          <h3>Pipeline checkpoints</h3>
+          <div class="timeline-list">
+            <article class="timeline-item">
+              <strong>Request created</strong>
+              <span>{{ currentJob.requestedAt }}</span>
+            </article>
+            <article class="timeline-item">
+              <strong>Candidates sent</strong>
+              <span>{{ sentCandidates().length }} profile{{ sentCandidates().length === 1 ? '' : 's' }}</span>
+            </article>
+            <article class="timeline-item">
+              <strong>Interview status</strong>
+              <span>Track from interview hub</span>
+            </article>
+          </div>
+        </section>
+      </article>
+
+      <article class="surface-card table-card fade-in-up delay-2">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Sent Candidates</p>
+            <h2>Profiles shared for this request</h2>
+          </div>
+          <button type="button" class="db-btn db-btn-soft" (click)="searchMatchingCandidates()">Search candidates</button>
+        </div>
+
+        <div class="table-shell" *ngIf="sentCandidates().length; else noSentCandidates">
+          <div class="table-head sent-grid">
+            <span>Candidate</span>
+            <span>Name</span>
+            <span>Role</span>
+            <span>Experience</span>
+            <span>Fit Score</span>
+            <span>Sent At</span>
+          </div>
+
+          @for (candidate of sentCandidates(); track candidate.id + candidate.jobId) {
+            <article class="table-row sent-grid">
+              <span class="avatar">{{ candidate.name.charAt(0) }}</span>
+              <strong>{{ candidate.name }}</strong>
+              <span>{{ candidate.role }}</span>
+              <span>{{ candidate.experience }}</span>
+              <span class="status-pill">{{ candidate.fitScore }}%</span>
+              <span>{{ candidate.sentAt | date:'mediumDate' }}</span>
+            </article>
+          }
+        </div>
+
+        <ng-template #noSentCandidates>
+          <div class="empty-state rich-empty">
+            <h3>No sent candidates yet</h3>
+            <p>Start with matching candidates and send the strongest profiles to begin interview tracking.</p>
+            <button type="button" class="db-btn db-btn-primary" (click)="searchMatchingCandidates()">
+              Search Matching Candidates
+            </button>
+          </div>
+        </ng-template>
+      </article>
+    </section>
+  </ng-container>
+
+  <ng-template #missingJob>
+    <div class="empty-state">Job not found.</div>
+  </ng-template>
+</div>

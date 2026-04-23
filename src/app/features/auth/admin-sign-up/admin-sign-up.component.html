@@ -1,0 +1,129 @@
+<div class="auth-shell">
+  <section class="brand-header">
+    <div class="brand-mark">HB</div>
+    <h1>HireBridge</h1>
+    <p>Admin workspace onboarding streamlined for secure access</p>
+  </section>
+
+  <section class="auth-card wide-card">
+    <div class="card-header">
+      <h2>Admin sign up</h2>
+      <p>Create an admin account to access the admin panel</p>
+    </div>
+
+    <form (ngSubmit)="submit()" class="form two-column">
+      <div class="field-block full">
+        <label for="admin-signup-name">Full Name</label>
+        <div class="field with-icon">
+          <i class="fas fa-user"></i>
+          <input
+            id="admin-signup-name"
+            type="text"
+            [(ngModel)]="fullName"
+            name="fullName"
+            placeholder="Admin full name"
+            (blur)="onBlur('fullName')"
+          />
+        </div>
+        <div class="error" *ngIf="touched['fullName'] && isEmpty(fullName)">Full name is required</div>
+      </div>
+
+      <div class="field-block">
+        <label for="admin-signup-email">Email</label>
+        <div class="field with-icon">
+          <i class="fas fa-envelope"></i>
+          <input
+            id="admin-signup-email"
+            type="email"
+            [(ngModel)]="email"
+            name="email"
+            placeholder="admin@example.com"
+            (blur)="onBlur('email')"
+          />
+        </div>
+        <div class="error" *ngIf="touched['email'] && isEmpty(email)">Email is required</div>
+      </div>
+
+      <div class="field-block">
+        <label for="admin-signup-phone">Phone Number</label>
+        <div class="field with-icon">
+          <i class="fas fa-phone"></i>
+          <input
+            id="admin-signup-phone"
+            [(ngModel)]="phone"
+            name="phone"
+            placeholder="+20 100 000 0000"
+            (blur)="onBlur('phone')"
+          />
+        </div>
+        <div class="error" *ngIf="touched['phone'] && isEmpty(phone)">Phone is required</div>
+      </div>
+
+      <div class="field-block">
+        <label for="admin-signup-password">Password</label>
+        <div class="field with-icon">
+          <i class="fas fa-lock"></i>
+          <input
+            id="admin-signup-password"
+            type="password"
+            [(ngModel)]="password"
+            name="password"
+            placeholder="Create a secure password"
+            (blur)="onBlur('password')"
+          />
+        </div>
+        <div class="error" *ngIf="touched['password'] && isEmpty(password)">Password is required</div>
+        <div class="error" *ngIf="touched['password'] && !isEmpty(password) && password.length < 6">
+          Password must be at least 6 characters
+        </div>
+      </div>
+
+      <div class="field-block">
+        <label for="admin-signup-confirm-password">Confirm Password</label>
+        <div class="field with-icon">
+          <i class="fas fa-shield-halved"></i>
+          <input
+            id="admin-signup-confirm-password"
+            type="password"
+            [(ngModel)]="confirmPassword"
+            name="confirmPassword"
+            placeholder="Repeat your password"
+            (blur)="onBlur('confirmPassword')"
+          />
+        </div>
+        <div class="error" *ngIf="touched['confirmPassword'] && isEmpty(confirmPassword)">
+          Confirm your password
+        </div>
+      </div>
+
+      <div class="field-block full">
+        <div class="error" *ngIf="touched['confirmPassword'] && password !== confirmPassword">
+          Passwords do not match
+        </div>
+        <div class="error" *ngIf="errorMsg">{{ errorMsg }}</div>
+      </div>
+
+      <div class="field-block full">
+        <button type="submit" class="primary-btn" [disabled]="loading">
+          <span *ngIf="!loading">Create Admin Account <i class="fas fa-arrow-right"></i></span>
+          <span *ngIf="loading" class="loader"></span>
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <div class="auth-link-row">
+    <span>Already registered as admin?</span>
+    <a routerLink="/admin-login">Log in to admin account</a>
+  </div>
+
+  <footer class="page-footer">
+    <span>&copy; 2026 HireBridge. All rights reserved.</span>
+    <nav>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Security</a>
+      <a href="#">Contact Support</a>
+    </nav>
+  </footer>
+</div>

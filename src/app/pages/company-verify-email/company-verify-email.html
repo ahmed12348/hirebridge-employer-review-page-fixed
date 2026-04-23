@@ -1,0 +1,62 @@
+<div class="auth-shell">
+  <section class="brand-header">
+    <div class="brand-mark">HB</div>
+    <h1>HireBridge</h1>
+    <p>Enterprise hiring and career workflows redefined</p>
+  </section>
+
+  <section class="auth-card otp-card">
+    <div class="card-header">
+      <h2>Company email verification</h2>
+      <p>Enter the OTP sent to your company inbox to activate the workspace</p>
+    </div>
+
+    <form (ngSubmit)="verify()" class="form">
+      <div class="field-block">
+        <label for="company-verify-email">Company Email</label>
+        <div class="field with-icon">
+          <i class="fas fa-building"></i>
+          <input
+            id="company-verify-email"
+            type="email"
+            [value]="email"
+            readonly
+            placeholder="company@email.com"
+          />
+        </div>
+      </div>
+
+      <div class="field-block">
+        <label>Verification Code</label>
+        <div class="otp-container">
+          <input maxlength="1" (input)="handleInput($event,0)" (keydown)="handleKeyDown($event,0)" />
+          <input maxlength="1" (input)="handleInput($event,1)" (keydown)="handleKeyDown($event,1)" />
+          <input maxlength="1" (input)="handleInput($event,2)" (keydown)="handleKeyDown($event,2)" />
+          <input maxlength="1" (input)="handleInput($event,3)" (keydown)="handleKeyDown($event,3)" />
+          <input maxlength="1" (input)="handleInput($event,4)" (keydown)="handleKeyDown($event,4)" />
+        </div>
+      </div>
+
+      <div *ngIf="successMessage" class="success-box">{{ successMessage }}</div>
+      <div *ngIf="errorMessage" class="error-box">{{ errorMessage }}</div>
+
+      <button type="submit" class="primary-btn" [disabled]="loading">
+        {{ loading ? 'Verifying...' : 'Verify Company' }}
+      </button>
+    </form>
+
+    <div class="auth-link-row compact">
+      <span>Code expires in {{ countdown }}s</span>
+    </div>
+  </section>
+
+  <footer class="page-footer">
+    <span>© 2026 HireBridge. All rights reserved.</span>
+    <nav>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Security</a>
+      <a href="#">Contact Support</a>
+    </nav>
+  </footer>
+</div>

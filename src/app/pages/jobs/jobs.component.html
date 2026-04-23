@@ -1,0 +1,144 @@
+<div class="jobs-page">
+
+  <div class="page-wrapper">
+
+    <!-- 🔝 Header -->
+    <div class="jobs-header">
+
+      <h2>Find Jobs</h2>
+
+      <input 
+        type="text" 
+        placeholder="Search jobs..."
+        [(ngModel)]="searchTerm"
+      />
+
+    </div>
+
+    <!-- 🧱 Layout -->
+    <div class="jobs-layout">
+
+      <!-- 📊 Sidebar -->
+      <aside class="filters">
+
+        <h3>Filters</h3>
+
+        <!-- Job Type -->
+        <div class="filter-group">
+          <h4>Job Type</h4>
+
+          <label>
+            <input type="checkbox" (change)="toggleSelection('Full-time', selectedTypes)">
+            Full Time
+          </label>
+
+          <label>
+            <input type="checkbox" (change)="toggleSelection('Part-time', selectedTypes)">
+            Part Time
+          </label>
+
+          <label>
+            <input type="checkbox" (change)="toggleSelection('Remote', selectedTypes)">
+            Remote
+          </label>
+        </div>
+
+        <!-- Location -->
+        <div class="filter-group">
+          <h4>Location</h4>
+
+          <label>
+            <input type="checkbox" (change)="toggleSelection('Cairo', selectedLocations)">
+            Cairo
+          </label>
+
+          <label>
+            <input type="checkbox" (change)="toggleSelection('Remote', selectedLocations)">
+            Remote
+          </label>
+
+          <label>
+            <input type="checkbox" (change)="toggleSelection('Alex', selectedLocations)">
+            Alexandria
+          </label>
+        </div>
+
+        <!-- Salary -->
+        <div class="filter-group">
+          <h4>Salary Range</h4>
+
+          <div class="salary-box">
+            <input 
+              type="range" 
+              min="0" 
+              max="20000" 
+              step="1000"
+              [(ngModel)]="maxSalary"
+              class="slider"
+            />
+
+            <div class="salary-values">
+              <span>0</span>
+              <span>{{ maxSalary }} EGP</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Favorites -->
+        <div class="filter-group">
+          <h4>Favorites</h4>
+
+          <label>
+            <input type="checkbox" [(ngModel)]="showFavoritesOnly">
+            Show Favorites Only
+          </label>
+        </div>
+
+      </aside>
+
+      <!-- 🧾 Jobs -->
+      <section class="jobs-content">
+
+        <h3 class="section-title">Recommended Jobs</h3>
+
+        <div class="jobs-grid">
+
+          <div 
+            class="job-card" 
+            *ngFor="let job of filteredJobs; let i = index"
+            [ngClass]="'card-' + (i % 4)">
+
+            <!-- Header -->
+            <div class="job-header">
+              <h4>{{ job.title }}</h4>
+
+              <span class="favorite" (click)="toggleFavorite(job.id)">
+                {{ isFavorite(job.id) ? '❤️' : '🤍' }}
+              </span>
+            </div>
+
+            <!-- Company -->
+            <p class="company">{{ job.company }}</p>
+
+            <!-- Info -->
+            <div class="info">
+              <span>📍 {{ job.location }}</span>
+              <span>💰 {{ job.salary }} EGP</span>
+            </div>
+
+            <!-- Button -->
+            <button [routerLink]="['/jobs', job.id]">
+              Details
+            </button>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </div>
+
+</div>

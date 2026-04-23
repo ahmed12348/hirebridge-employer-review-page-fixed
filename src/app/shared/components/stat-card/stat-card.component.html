@@ -1,0 +1,13 @@
+<div class="stat-card card-modern h-100" [ngClass]="colorClass">
+  <div class="d-flex justify-content-between align-items-start gap-3">
+    <div>
+      <p class="stat-title mb-2">{{ title }}</p>
+      <h3 class="stat-value mb-0">{{ value }}</h3>
+    </div>
+    <div class="stat-card-icon">
+      <i [class]="iconClass"></i>
+    </div>
+  </div>
+
+  <p class="stat-description mb-0">{{ description }}</p>
+</div>

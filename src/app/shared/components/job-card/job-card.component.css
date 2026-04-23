@@ -1,0 +1,40 @@
+.job-card {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.job-role {
+  font-family: 'Manrope', sans-serif;
+  font-size: 1.08rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.job-company,
+.job-meta {
+  color: #64748b;
+}
+
+.job-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(248, 250, 252, 0.88);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  font-size: 0.9rem;
+}
+
+.progress {
+  height: 10px;
+  border-radius: 999px;
+  background: #e2e8f0;
+}
+
+.progress-bar {
+  border-radius: 999px;
+  background: linear-gradient(90deg, #2563eb, #0ea5e9);
+}

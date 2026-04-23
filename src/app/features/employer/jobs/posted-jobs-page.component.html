@@ -1,0 +1,447 @@
+<div class="jobs-page">
+  <main class="jobs-main">
+    <section class="jobs-hero">
+      <div class="hero-head">
+        <div class="hero-copy">
+          <p class="hero-eyebrow">Recruitment Management</p>
+          <h1>Hiring Requests</h1>
+          <p class="hero-subtitle">
+            Follow each request from submitted brief to recommended candidates, interviews, and
+            filled positions without leaving the employer flow.
+          </p>
+        </div>
+
+        <div class="hero-summary">
+          <div class="summary-stat surface-muted">
+            <span>Active Requests</span>
+            <strong>{{ jobs.length }}</strong>
+          </div>
+
+          <div class="summary-stat surface-muted">
+            <span>Total Headcount</span>
+            <strong>{{ totalHeadcount }}</strong>
+          </div>
+
+          <div class="summary-stat surface-muted">
+            <span>Upcoming Interviews</span>
+            <strong>{{ upcomingInterviews }}</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="surface-card openings-card">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Active Pipeline</p>
+          <h2>Current Hiring Requests</h2>
+          <p class="section-subtitle">
+            Track budget, shortlist progress, interviews, and hires in one employer-friendly view.
+          </p>
+        </div>
+
+        <div class="section-actions">
+          <a routerLink="/employer/jobs/new" class="primary-btn">Submit Hiring Request</a>
+          <button type="button" class="ghost-btn" (click)="loadJobs()">Refresh Data</button>
+        </div>
+      </div>
+
+      <div *ngIf="error" class="message error">{{ error }}</div>
+      <div *ngIf="loading" class="message">Loading requests...</div>
+
+      <div *ngIf="!loading && jobs.length > 0" class="openings-table">
+        <div class="openings-head">
+          <div>Request</div>
+          <div>Role</div>
+          <div>Progress</div>
+          <div>Interviews</div>
+          <div>Budget</div>
+          <div>Manage</div>
+        </div>
+
+        <article *ngFor="let job of jobs" class="opening-row">
+          <div class="opening-cell opening-main">
+            <div class="job-avatar">
+              <span>{{ job.openRoles }}</span>
+            </div>
+
+            <div class="job-main-copy">
+              <div class="job-title-line">
+                <h3>{{ job.title }}</h3>
+                <span [class]="'priority-pill ' + (job.priority || 'medium')">
+                  {{ job.priority || 'medium' }}
+                </span>
+              </div>
+              <p>{{ job.department || job.category }}</p>
+              <small *ngIf="job.description">{{ job.description }}</small>
+            </div>
+          </div>
+
+          <div class="opening-cell">
+            <div class="stacked-cell">
+              <strong>{{ getEmploymentTypeLabel(job.type.toString()) }}</strong>
+              <span>{{ job.experienceLevel || 'Mid' }} level</span>
+            </div>
+          </div>
+
+          <div class="opening-cell">
+            <div class="progress-stack">
+              <div class="progress-line">
+                <strong>{{ getMatchedCount(job.id) }}</strong>
+                <span>Matched</span>
+              </div>
+              <div class="progress-line">
+                <strong>{{ getShortlistedCount(job.id) }}</strong>
+                <span>Sent</span>
+              </div>
+              <div class="progress-line">
+                <strong>{{ getAcceptedForInterviewCount(job.id) }}</strong>
+                <span>Accepted</span>
+              </div>
+              <div class="progress-line">
+                <strong>{{ getHiredCount(job.id) }}</strong>
+                <span>Hired</span>
+              </div>
+              <small>{{ getRemainingCount(job) }} remaining of {{ job.openRoles }}</small>
+            </div>
+          </div>
+
+          <div class="opening-cell">
+            <div class="status-wrap">
+              <span class="stat-pill">{{ getInterviewCount(job.id) }}</span>
+              <small>{{ getUpcomingInterviewCount(job.id) }} upcoming</small>
+            </div>
+          </div>
+
+          <div class="opening-cell">
+            <div class="stacked-cell">
+              <strong>{{ job.salary | currency:'EGP ':'symbol':'1.0-0' }}</strong>
+              <span>{{ job.location }}</span>
+            </div>
+          </div>
+
+          <div class="opening-cell actions-cell">
+            <div class="bottom-actions">
+              <div class="action-main">
+                <button type="button" class="main-btn" (click)="openJobDetails(job.id)">
+                  View Details
+                </button>
+
+                <button
+                  type="button"
+                  class="ghost-btn review-btn"
+                  (click)="openReviewCandidates(job.id)"
+                  [class.disabled]="getShortlistedCount(job.id) === 0"
+                  [disabled]="getShortlistedCount(job.id) === 0"
+                >
+                  Review Candidates
+                </button>
+              </div>
+
+              <div class="action-danger-wrap">
+                <button type="button" class="reject-btn" (click)="deleteJob(job)">
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="opening-skills" *ngIf="job.skillsRequired.length">
+            <span class="meta-pill" *ngFor="let skill of job.skillsRequired">
+              {{ skill }}
+            </span>
+          </div>
+        </article>
+      </div>
+
+      <div *ngIf="!loading && jobs.length === 0" class="message">
+        No hiring requests created yet.
+      </div>
+    </section>
+  </main>
+
+  <div
+    class="details-modal-backdrop"
+    *ngIf="selectedJob"
+    (click)="trackModalBackdrop($event)"
+  >
+    <section class="details-modal surface-card">
+      <div class="details-modal-head">
+        <div>
+          <p class="eyebrow">Hiring Request Preview</p>
+          <h2>{{ selectedJob.title }}</h2>
+          <p class="section-subtitle">
+            Review the brief, progress, shortlist activity, and interview status without leaving the hiring requests page.
+          </p>
+        </div>
+
+        <button type="button" class="close-btn" (click)="closeJobDetails()">x</button>
+      </div>
+
+      <div *ngIf="detailsError" class="message error">{{ detailsError }}</div>
+      <div *ngIf="detailsLoading" class="message">Loading request preview...</div>
+
+      <ng-container *ngIf="!detailsLoading && !detailsError">
+        <section class="details-stats">
+          <article class="detail-stat">
+            <span>Requested headcount</span>
+            <strong>{{ selectedJob.openRoles }}</strong>
+          </article>
+          <article class="detail-stat">
+            <span>Remaining</span>
+            <strong>{{ selectedRemainingHeadcount }}</strong>
+          </article>
+          <article class="detail-stat">
+            <span>Upcoming interviews</span>
+            <strong>{{ selectedUpcomingInterviewsCount }}</strong>
+          </article>
+          <article class="detail-stat">
+            <span>Average fit score</span>
+            <strong>{{ selectedAverageFitScore }}%</strong>
+          </article>
+        </section>
+
+        <section class="details-grid">
+          <article class="detail-panel">
+            <div class="detail-panel-head">
+              <div>
+                <p class="eyebrow">Role Overview</p>
+                <h3>Request summary</h3>
+              </div>
+              <button
+                type="button"
+                class="ghost-btn"
+                (click)="openReviewCandidates(selectedJob.id)"
+              >
+                Review Candidates
+              </button>
+            </div>
+
+            <div class="summary-grid">
+              <div class="summary-box">
+                <span>Department</span>
+                <strong>{{ selectedJob.department || selectedJob.category }}</strong>
+              </div>
+              <div class="summary-box">
+                <span>Location</span>
+                <strong>{{ selectedJob.location }}</strong>
+              </div>
+              <div class="summary-box">
+                <span>Budget</span>
+                <strong>{{ selectedJob.salary | currency:'EGP ':'symbol':'1.0-0' }}</strong>
+              </div>
+              <div class="summary-box">
+                <span>Employment type</span>
+                <strong>{{ getEmploymentTypeLabel(selectedJob.type.toString()) }}</strong>
+              </div>
+              <div class="summary-box">
+                <span>Experience level</span>
+                <strong>{{ selectedJob.experienceLevel }}</strong>
+              </div>
+              <div class="summary-box">
+                <span>Deadline</span>
+                <strong>{{ selectedJob.deadline | date:'mediumDate' }}</strong>
+              </div>
+            </div>
+
+            <div class="copy-block">
+              <h3>Full brief</h3>
+              <p>{{ selectedJob.description }}</p>
+            </div>
+
+            <div class="copy-block" *ngIf="selectedJob.skillsRequired.length">
+              <h3>Required skills</h3>
+              <div class="skills-row">
+                <span class="meta-pill" *ngFor="let skill of selectedJob.skillsRequired">{{ skill }}</span>
+              </div>
+            </div>
+
+            <div class="copy-block">
+              <h3>Hiring progress</h3>
+              <div class="progress-card">
+                <div class="progress-head">
+                  <strong>{{ selectedProgressPercent }}%</strong>
+                  <span>{{ selectedHiredCandidatesCount }} of {{ selectedJob.openRoles }} positions filled</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" [style.width.%]="selectedProgressPercent"></div>
+                </div>
+                <div class="progress-grid">
+                  <div>
+                    <span>Recommended</span>
+                    <strong>{{ selectedJobApplicants.length }}</strong>
+                  </div>
+                  <div>
+                    <span>Shared</span>
+                    <strong>{{ selectedSentCandidatesCount }}</strong>
+                  </div>
+                  <div>
+                    <span>Interviews</span>
+                    <strong>{{ selectedUpcomingInterviewsCount }}</strong>
+                  </div>
+                  <div>
+                    <span>Hired</span>
+                    <strong>{{ selectedHiredCandidatesCount }}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="detail-panel">
+            <div class="detail-panel-head">
+              <div>
+                <p class="eyebrow">Interviews</p>
+                <h3>Interview activity</h3>
+              </div>
+            </div>
+
+            <div class="interview-list" *ngIf="selectedJobInterviews.length; else noInterviews">
+              <article class="interview-card" *ngFor="let interview of selectedJobInterviews">
+                <div class="interview-head">
+                  <div>
+                    <strong>{{ interview.candidateName }}</strong>
+                    <p>{{ interview.date | date:'mediumDate' }} at {{ interview.time }}</p>
+                  </div>
+                  <span class="status-pill">{{ getInterviewStatusLabel(interview.status) }}</span>
+                </div>
+                <small>{{ interview.type }} • {{ interview.interviewerName || 'Hiring team' }}</small>
+              </article>
+            </div>
+
+            <ng-template #noInterviews>
+              <div class="message">No interviews linked to this request yet.</div>
+            </ng-template>
+
+            <div class="detail-panel-head candidates-head">
+              <div>
+                <p class="eyebrow">Candidates</p>
+                <h3>Top shortlisted profiles</h3>
+              </div>
+            </div>
+
+            <div class="candidate-list" *ngIf="selectedJobApplicants.length; else noApplicants">
+              <article class="candidate-item" *ngFor="let applicant of selectedJobApplicants | slice:0:4">
+                <div class="candidate-item-head">
+                  <div>
+                    <strong>{{ applicant.candidateName }}</strong>
+                    <p>{{ applicant.department }} • {{ applicant.experienceYears || 0 }} years</p>
+                  </div>
+                  <span class="score-pill">{{ applicant.fitScore || 0 }}% fit</span>
+                </div>
+                <div class="candidate-item-meta">
+                  <span>{{ applicant.salaryExpectation | currency:'EGP ':'symbol':'1.0-0' }}</span>
+                  <span>{{ getSalaryMatchLabel(applicant.salaryMatch) }}</span>
+                  <span>{{ getCompanyDecisionLabel(applicant) }}</span>
+                </div>
+              </article>
+            </div>
+
+            <ng-template #noApplicants>
+              <div class="message">No recommended candidates linked to this request yet.</div>
+            </ng-template>
+          </article>
+        </section>
+      </ng-container>
+    </section>
+  </div>
+
+  <div
+    class="details-modal-backdrop"
+    *ngIf="candidatePreviewJob"
+    (click)="trackCandidatePreviewBackdrop($event)"
+  >
+    <section class="details-modal surface-card candidate-preview-modal">
+      <div class="details-modal-head">
+        <div>
+          <p class="eyebrow">Candidate Preview</p>
+          <h2>{{ candidatePreviewJob.title }}</h2>
+          <p class="section-subtitle">
+            Review the candidate from this hiring request, accept or reject them, then continue to the full review page.
+          </p>
+        </div>
+
+        <button type="button" class="close-btn" (click)="closeCandidatePreview()">x</button>
+      </div>
+
+      <div *ngIf="candidatePreviewError" class="message error">{{ candidatePreviewError }}</div>
+      <div *ngIf="candidatePreviewLoading" class="message">Loading candidate preview...</div>
+
+      <ng-container *ngIf="!candidatePreviewLoading && !candidatePreviewError">
+        <div class="message" *ngIf="!previewedCandidate">
+          No shortlisted candidate is available for this request yet.
+        </div>
+
+        <section class="candidate-preview-layout" *ngIf="previewedCandidate as candidate">
+          <article class="candidate-preview-card">
+            <div class="candidate-item-head">
+              <div>
+                <p class="eyebrow">Candidate</p>
+                <h3>{{ candidate.candidateName }}</h3>
+                <p>{{ candidate.department }} • {{ candidate.experienceYears || 0 }} years experience</p>
+              </div>
+              <span class="score-pill">{{ candidate.fitScore || 0 }}% fit</span>
+            </div>
+
+            <div class="summary-grid">
+              <div class="summary-box">
+                <span>Email</span>
+                <strong>{{ candidate.email }}</strong>
+              </div>
+              <div class="summary-box">
+                <span>Expected salary</span>
+                <strong>{{ candidate.salaryExpectation | currency:'EGP ':'symbol':'1.0-0' }}</strong>
+              </div>
+              <div class="summary-box">
+                <span>Work type</span>
+                <strong>{{ candidate.workType || 'Flexible' }}</strong>
+              </div>
+              <div class="summary-box">
+                <span>Decision</span>
+                <strong>{{ getCompanyDecisionLabel(candidate) }}</strong>
+              </div>
+            </div>
+
+            <div class="copy-block">
+              <h3>Notes</h3>
+              <p>{{ candidate.notes || 'No summary available yet.' }}</p>
+            </div>
+
+            <div class="candidate-item-meta">
+              <span>{{ getSalaryMatchLabel(candidate.salaryMatch) }}</span>
+              <span>{{ candidate.trustScore || 0 }}/100 trust score</span>
+            </div>
+          </article>
+
+          <aside class="candidate-preview-sidebar">
+            <div class="preview-count">
+              <span>Candidate {{ candidatePreviewIndex + 1 }} of {{ candidatePreviewApplicants.length }}</span>
+              <strong>{{ candidate.candidateName }}</strong>
+            </div>
+
+            <div class="preview-nav">
+              <button type="button" class="ghost-btn" (click)="showPreviousCandidate()" [disabled]="!hasPreviousPreviewCandidate || candidateActionLoading">
+                Previous
+              </button>
+              <button type="button" class="ghost-btn" (click)="showNextCandidate()" [disabled]="!hasNextPreviewCandidate || candidateActionLoading">
+                Next
+              </button>
+            </div>
+
+            <div class="bottom-actions">
+              <button type="button" class="main-btn" (click)="acceptPreviewCandidate()" [disabled]="candidateActionLoading">
+                {{ candidateActionLoading ? 'Saving...' : 'Accept & open review' }}
+              </button>
+              <button type="button" class="reject-btn" (click)="rejectPreviewCandidate()" [disabled]="candidateActionLoading">
+                Reject & open review
+              </button>
+              <button type="button" class="ghost-btn" (click)="openFullReviewFromPreview()" [disabled]="candidateActionLoading">
+                Open full review page
+              </button>
+            </div>
+          </aside>
+        </section>
+      </ng-container>
+    </section>
+  </div>
+</div>

@@ -1,0 +1,14 @@
+<div class="toast-stack" *ngIf="toastService.messages$ | async as messages">
+  <article
+    *ngFor="let message of messages"
+    class="toast"
+    [ngClass]="message.type"
+  >
+    <span class="toast-indicator"></span>
+    <div class="toast-copy">
+      <strong>{{ message.type | titlecase }}</strong>
+      <p>{{ message.text }}</p>
+    </div>
+    <button type="button" class="toast-close" (click)="dismiss(message.id)">x</button>
+  </article>
+</div>

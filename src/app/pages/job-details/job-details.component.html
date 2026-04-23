@@ -1,0 +1,121 @@
+<div class="details-page" *ngIf="job">
+
+  <!-- 🔙 Back -->
+  <button class="back-btn" routerLink="/jobs">
+    ← Back
+  </button>
+
+  <!-- 📦 Card -->
+  <div class="details-card">
+
+    <!-- 🔥 Header -->
+    <div class="header">
+      <div>
+        <h2>{{ job.title }}</h2>
+        <p class="company">{{ job.company }}</p>
+      </div>
+
+      <span class="favorite" (click)="toggleFavorite(job.id)">
+        {{ isFavorite(job.id) ? '❤️' : '🤍' }}
+      </span>
+    </div>
+
+    <!-- 📊 Info -->
+    <div class="info">
+      <span>📍 {{ job.location }}</span>
+      <span>💰 {{ job.salary }} EGP</span>
+      <span class="type">{{ job.type }}</span>
+    </div>
+
+    <!-- 📝 Description -->
+    <div class="section">
+      <h3>Job Description</h3>
+      <p>{{ job.description }}</p>
+    </div>
+
+    <!-- 🧠 Skills -->
+    <div class="section">
+      <h3>Skills</h3>
+
+      <div class="skills">
+        <span *ngFor="let skill of job.skills">
+          {{ skill }}
+        </span>
+      </div>
+    </div>
+
+    <!-- 🔘 Apply -->
+    <button class="apply-btn" (click)="openApply()">
+      Apply Now
+    </button>
+
+  </div>
+
+</div>
+
+<!-- 🔥 APPLY MODAL -->
+<div class="modal" *ngIf="showApplyModal">
+
+  <div class="modal-content">
+
+    <h3>Apply for this Job</h3>
+
+    <!-- Name -->
+    <div class="form-group">
+      <input 
+        type="text" 
+        placeholder="Full Name"
+        [(ngModel)]="applyData.name"
+        [class.invalid]="submitted && !applyData.name"
+      >
+      <small *ngIf="submitted && !applyData.name">Name is required</small>
+    </div>
+
+    <!-- Email -->
+    <div class="form-group">
+      <input 
+        type="email" 
+        placeholder="Email Address"
+        [(ngModel)]="applyData.email"
+        [class.invalid]="submitted && !applyData.email"
+      >
+      <small *ngIf="submitted && !applyData.email">Email is required</small>
+    </div>
+
+    <!-- Message -->
+    <div class="form-group">
+      <textarea 
+        placeholder="Write a message..."
+        [(ngModel)]="applyData.message"
+      ></textarea>
+    </div>
+
+    <!-- 📎 Upload -->
+    <div class="upload-box"
+         [class.invalid]="submitted && !file"
+         (dragover)="onDragOver($event)"
+         (drop)="onDrop($event)"
+         (click)="fileInput.click()">
+
+      <p *ngIf="!fileName">📎 Drag & Drop CV or click</p>
+      <p *ngIf="fileName">📄 {{ fileName }}</p>
+
+      <input type="file" hidden #fileInput (change)="onFileSelected($event)">
+    </div>
+
+    <small *ngIf="submitted && !file">CV is required</small>
+
+    <!-- Buttons -->
+    <div class="modal-actions">
+      <button class="submit" (click)="submitApplication()">Apply</button>
+      <button class="cancel" (click)="closeApply()">Cancel</button>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ✅ Success -->
+<div class="success-popup" *ngIf="showSuccess">
+  ✅ Application Sent Successfully
+</div>

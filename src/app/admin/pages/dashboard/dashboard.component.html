@@ -1,0 +1,175 @@
+<div class="dashboard-page" *ngIf="!loading(); else loadingState">
+  <section class="db-hero">
+    <div class="db-hero-copy">
+      <p class="db-eyebrow">Admin Command Center</p>
+      <h1>One place to manage the full hiring operation.</h1>
+      <p>
+        Monitor requests, candidates, companies, and interviews in one unified workspace for fast
+        operational decisions.
+      </p>
+
+      <div class="db-hero-actions">
+        <button type="button" class="db-btn db-btn-primary" (click)="openJobs()">Open Jobs</button>
+        <button type="button" class="db-btn db-btn-ghost" (click)="openCandidates()">
+          Open Candidates
+        </button>
+      </div>
+    </div>
+
+    <aside class="db-hero-side">
+      <div class="db-side-top">
+        <span>Pipeline Health</span>
+        <strong>{{ positionsFilledCount }}</strong>
+        <small>Shortlisted candidates across active requests</small>
+      </div>
+
+      <div class="db-side-grid">
+        <article>
+          <span>Active requests</span>
+          <strong>{{ activeRequestsCount }}</strong>
+        </article>
+        <article>
+          <span>Candidates in flow</span>
+          <strong>{{ candidatesSentCount }}</strong>
+        </article>
+        <article>
+          <span>Upcoming interviews</span>
+          <strong>{{ upcomingInterviews().length }}</strong>
+        </article>
+        <article>
+          <span>Remaining headcount</span>
+          <strong>{{ remainingHeadcount }}</strong>
+        </article>
+      </div>
+    </aside>
+  </section>
+
+  <section class="db-kpis">
+    @for (stat of stats(); track stat.label) {
+      <article class="db-kpi">
+        <span class="db-kpi-line" [class]="'db-kpi-line ' + stat.tone"></span>
+        <div>
+          <p>{{ stat.label }}</p>
+          <h2>{{ stat.value }}</h2>
+          <small>{{ stat.helper }}</small>
+        </div>
+      </article>
+    }
+  </section>
+
+  <section class="db-main-grid">
+    <article class="db-panel db-jobs-panel">
+      <header class="db-panel-head">
+        <div>
+          <p class="db-eyebrow">Priority Requests</p>
+          <h3>Requests that need focus now</h3>
+        </div>
+        <button type="button" class="db-link db-action" (click)="openJobs()">View all</button>
+      </header>
+
+      <div class="db-job-list" *ngIf="featuredJobs().length; else emptyJobs">
+        @for (job of featuredJobs(); track job.id) {
+          <article class="db-job-card">
+            <div class="db-job-head">
+              <div>
+                <h4>{{ job.title }}</h4>
+                <p>{{ job.company }} • {{ job.location }}</p>
+              </div>
+              <span [class]="'db-priority ' + getPriorityClass(job.status)">{{
+                getPriorityLabel(job.status)
+              }}</span>
+            </div>
+
+            <div class="db-job-meta">
+              <span>{{ job.openRoles }} openings</span>
+              <span>{{ getMatchedCandidatesForJob(job.id) }} matched</span>
+              <span>{{ getHiredForJob(job.id) }} shortlisted</span>
+              <span>{{ getInterviewCountForJob(job.id) }} interviews</span>
+            </div>
+
+            <div class="db-progress-track" aria-hidden="true">
+              <span [style.width.%]="job.openRoles ? (getHiredForJob(job.id) / job.openRoles) * 100 : 0"></span>
+            </div>
+
+            <button type="button" class="db-link db-action" (click)="openJobDetails(job.id)">
+              Open request details
+            </button>
+          </article>
+        }
+      </div>
+
+      <ng-template #emptyJobs>
+        <div class="db-empty">No hiring requests available yet.</div>
+      </ng-template>
+    </article>
+
+    <article class="db-panel db-activity-panel">
+      <header class="db-panel-head">
+        <div>
+          <p class="db-eyebrow">Live Activity</p>
+          <h3>Latest recruitment updates</h3>
+        </div>
+      </header>
+
+      <div class="db-activity-list" *ngIf="activity().length; else emptyActivity">
+        @for (item of activity(); track item.title + item.time) {
+          <article class="db-activity-item">
+            <span class="db-activity-dot" [class]="'db-activity-dot ' + item.tone"></span>
+            <div>
+              <h4>{{ item.title }}</h4>
+              <p>{{ item.detail }}</p>
+              <small>{{ item.time }}</small>
+            </div>
+          </article>
+        }
+      </div>
+
+      <ng-template #emptyActivity>
+        <div class="db-empty">No recent activity yet.</div>
+      </ng-template>
+    </article>
+  </section>
+
+  <section class="db-panel db-interviews-panel">
+    <header class="db-panel-head">
+      <div>
+        <p class="db-eyebrow">Interview Timeline</p>
+        <h3>Upcoming conversations this cycle</h3>
+      </div>
+      <button type="button" class="db-link db-action" (click)="openInterviews()">
+        Open interview hub
+      </button>
+    </header>
+
+    <div class="db-table" *ngIf="upcomingInterviews().length; else emptyInterviews">
+      <div class="db-table-head">
+        <span>Candidate</span>
+        <span>Hiring request</span>
+        <span>Date</span>
+        <span>Status</span>
+      </div>
+
+      @for (interview of upcomingInterviews(); track interview.id) {
+        <article class="db-table-row">
+          <div>
+            <strong>{{ interview.candidateName }}</strong>
+            <small>{{ interview.companyName }}</small>
+          </div>
+          <span>{{ getJobTitle(interview.jobId) }}</span>
+          <span>{{ interview.date }}</span>
+          <span class="db-status">{{ interview.status }}</span>
+        </article>
+      }
+    </div>
+
+    <ng-template #emptyInterviews>
+      <div class="db-empty">No interview activity scheduled yet.</div>
+    </ng-template>
+  </section>
+
+  <div *ngIf="error()" class="db-error">{{ error() }}</div>
+</div>
+
+<ng-template #loadingState>
+  <div class="db-empty">Loading admin dashboard...</div>
+</ng-template>

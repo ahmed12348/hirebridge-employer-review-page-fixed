@@ -1,0 +1,60 @@
+<section class="candidate-page">
+  <article class="cb-hero fade-in-up">
+    <div>
+      <p class="cb-eyebrow">Candidate Settings</p>
+      <h1>Account and session controls.</h1>
+      <p>Review account state and manage your current login session.</p>
+    </div>
+  </article>
+
+  <section class="cb-kpis fade-in-up delay-1">
+    <article class="cb-kpi">
+      <span class="cb-kpi-line blue"></span>
+      <div>
+        <p>Email</p>
+        <h2>{{ user?.email || 'Not available' }}</h2>
+        <small>Primary login address.</small>
+      </div>
+    </article>
+
+    <article class="cb-kpi">
+      <span class="cb-kpi-line green"></span>
+      <div>
+        <p>Role</p>
+        <h2>{{ user?.role || 'candidate' }}</h2>
+        <small>Current permissions profile.</small>
+      </div>
+    </article>
+
+    <article class="cb-kpi">
+      <span class="cb-kpi-line amber"></span>
+      <div>
+        <p>Token Status</p>
+        <h2>{{ user ? 'Active' : 'Expired' }}</h2>
+        <small>{{ user ? 'Session healthy' : 'Log in again' }}</small>
+      </div>
+    </article>
+
+    <article class="cb-kpi">
+      <span class="cb-kpi-line red"></span>
+      <div>
+        <p>Security</p>
+        <h2>Sign Out</h2>
+        <small>Terminate current session.</small>
+      </div>
+    </article>
+  </section>
+
+  <article class="cb-panel fade-in-up delay-2">
+    <header class="cb-panel-head">
+      <div>
+        <p class="cb-eyebrow">Account Controls</p>
+        <h3>Session Management</h3>
+      </div>
+      <button type="button" class="cb-btn cb-btn-danger" (click)="logout()">
+        <i class="fas fa-arrow-right-from-bracket"></i>
+        Log out
+      </button>
+    </header>
+  </article>
+</section>

@@ -1,0 +1,72 @@
+@import '../candidate-page.shared.css';
+
+.identity-card {
+  border: 1px solid var(--cb-border);
+  border-radius: 12px;
+  padding: 10px;
+  background: #ffffff;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, #2367d4, #0f4aa8);
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.identity-card strong {
+  display: block;
+  color: #0f1f3c;
+}
+
+.identity-card small {
+  color: #596b83;
+}
+
+.profile-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.profile-form label {
+  display: grid;
+  gap: 6px;
+}
+
+.profile-form label span {
+  color: #5f7088;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-weight: 800;
+}
+
+.profile-form input,
+.profile-form select {
+  min-height: 40px;
+  border: 1px solid #d7e2f0;
+  border-radius: 10px;
+  padding: 0 10px;
+  background: #ffffff;
+  color: #0f172a;
+}
+
+.submit-btn {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 980px) {
+  .identity-card,
+  .profile-form {
+    grid-template-columns: 1fr;
+  }
+}

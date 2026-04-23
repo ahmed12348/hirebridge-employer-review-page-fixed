@@ -1,0 +1,70 @@
+<div class="auth-shell">
+  <section class="brand-header">
+    <div class="brand-mark">HB</div>
+    <h1>HireBridge</h1>
+    <p>Enterprise hiring and career workflows redefined</p>
+  </section>
+
+  <section class="auth-card role-card">
+    <div class="card-header">
+      <h2>Choose your role</h2>
+      <p>Select how you want to use the platform</p>
+    </div>
+
+    <div class="roles">
+      <!-- Candidate -->
+      <button
+        type="button"
+        class="role-box"
+        [class.active]="selectedRole === 'candidate'"
+        (click)="selectRole('candidate')"
+      >
+        <div class="role-icon">
+          <i class="fas fa-user-tie"></i>
+        </div>
+        <h3>Candidate</h3>
+        <p>Find jobs, complete your profile, and apply easily.</p>
+      </button>
+
+      <!-- Employer -->
+      <button
+        type="button"
+        class="role-box"
+        [class.active]="selectedRole === 'employer'"
+        (click)="selectRole('employer')"
+      >
+        <div class="role-icon">
+          <i class="fas fa-building"></i>
+        </div>
+        <h3>Employer</h3>
+        <p>Create your company space, post jobs, and hire talents.</p>
+      </button>
+    </div>
+
+    <div class="error shake" *ngIf="error">
+      Please select a role
+    </div>
+
+    <button
+      type="button"
+      class="primary-btn"
+      (click)="continue()"
+      [disabled]="loading"
+    >
+      <span *ngIf="!loading">
+        Continue <i class="fas fa-arrow-right"></i>
+      </span>
+      <span *ngIf="loading" class="loader"></span>
+    </button>
+  </section>
+
+  <footer class="page-footer">
+    <span>&copy; 2026 HireBridge. All rights reserved.</span>
+    <nav>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Security</a>
+      <a href="#">Contact Support</a>
+    </nav>
+  </footer>
+</div>

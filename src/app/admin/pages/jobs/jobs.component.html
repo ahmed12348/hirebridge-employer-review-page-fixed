@@ -1,0 +1,93 @@
+<section class="admin-page">
+  <article class="jobs-hero fade-in-up">
+    <div class="hero-left">
+      <p class="db-eyebrow">Admin Jobs</p>
+      <h1>Hiring requests with a cleaner control flow</h1>
+      <p class="hero-text">
+        Open any request to match candidates, send profiles, and continue to interview tracking in one streamlined path.
+      </p>
+
+      <div class="hero-tags">
+        <span class="hero-tag">Focused Pipeline</span>
+        <span class="hero-tag">Fast Matching</span>
+        <span class="hero-tag">Interview Ready</span>
+      </div>
+    </div>
+
+    <aside class="hero-metrics">
+      <div class="metric-card metric-card-strong">
+        <span>Upcoming Jobs</span>
+        <strong>{{ jobs().length }}</strong>
+      </div>
+      <div class="metric-row">
+        <div class="metric-card">
+          <span>Open</span>
+          <strong>{{ openJobsCount() }}</strong>
+        </div>
+        <div class="metric-card">
+          <span>In Review</span>
+          <strong>{{ reviewJobsCount() }}</strong>
+        </div>
+      </div>
+    </aside>
+  </article>
+
+  <section class="insights-row fade-in-up delay-1">
+    <article class="insight-card">
+      <span>Ready to process</span>
+      <strong>{{ openJobsCount() }}</strong>
+      <small>Open requests that can receive candidates now</small>
+    </article>
+    <article class="insight-card">
+      <span>Under validation</span>
+      <strong>{{ reviewJobsCount() }}</strong>
+      <small>Requests waiting for final hiring review</small>
+    </article>
+    <article class="insight-card">
+      <span>Pipeline load</span>
+      <strong>{{ jobs().length * 4 }}</strong>
+      <small>Estimated candidate slots to shortlist this cycle</small>
+    </article>
+  </section>
+
+  <article class="db-panel fade-in-up delay-2">
+    <header class="db-panel-head">
+      <div>
+        <p class="db-eyebrow">Job Requests</p>
+        <h2>Upcoming and active jobs</h2>
+        <p class="table-subtitle">Choose a request to open the premium details workflow.</p>
+      </div>
+    </header>
+
+    <div class="db-table" *ngIf="jobs().length; else noJobs">
+      <div class="db-table-head jobs-grid">
+        <span>ID</span>
+        <span>Title</span>
+        <span>Company</span>
+        <span>Location</span>
+        <span>Status</span>
+        <span>Action</span>
+      </div>
+
+      @for (job of jobs(); track job.id) {
+        <article class="db-table-row jobs-grid job-row">
+          <span class="job-id">{{ job.id }}</span>
+          <div class="job-main">
+            <strong>{{ job.title }}</strong>
+            <small>{{ job.workType }} • {{ job.minExperience }} years exp</small>
+          </div>
+          <span>{{ job.company }}</span>
+          <span>{{ job.location }}</span>
+          <span class="status-pill" [class]="job.status === 'Open' ? 'status-pill open' : 'status-pill review'">
+            {{ job.status }}
+          </span>
+          <button type="button" class="db-btn db-btn-soft" (click)="openDetails(job)">Open details</button>
+        </article>
+      }
+    </div>
+
+    <ng-template #noJobs>
+      <div class="db-empty">No jobs available.</div>
+    </ng-template>
+  </article>
+</section>

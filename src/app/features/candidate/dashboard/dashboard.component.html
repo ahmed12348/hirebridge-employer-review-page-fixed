@@ -1,0 +1,110 @@
+<section class="candidate-page">
+  <article class="cb-hero fade-in-up">
+    <div>
+      <p class="cb-eyebrow">Candidate Command Center</p>
+      <h1>Welcome back, {{ userName }}.</h1>
+      <p>
+        Track your application pipeline in one place and focus on profile readiness while companies review your submissions.
+      </p>
+
+      <div class="hero-actions">
+        <button type="button" class="cb-btn cb-btn-primary" routerLink="/applications">Open My Applications</button>
+        <button type="button" class="cb-btn cb-btn-soft" routerLink="/profile">Open Profile</button>
+      </div>
+    </div>
+
+    <aside class="hero-side">
+      <article>
+        <span>Total</span>
+        <strong>{{ stats.total }}</strong>
+      </article>
+      <article>
+        <span>Accepted</span>
+        <strong>{{ stats.accepted }}</strong>
+      </article>
+      <article>
+        <span>Pending</span>
+        <strong>{{ stats.pending }}</strong>
+      </article>
+      <article>
+        <span>Rejected</span>
+        <strong>{{ stats.rejected }}</strong>
+      </article>
+    </aside>
+  </article>
+
+  <section class="cb-kpis fade-in-up delay-1">
+    <article class="cb-kpi">
+      <span class="cb-kpi-line blue"></span>
+      <div>
+        <p>Acceptance Rate</p>
+        <h2>{{ stats.total ? ((stats.accepted / stats.total) * 100 | number:'1.0-0') : 0 }}%</h2>
+        <small>Percentage of accepted applications.</small>
+      </div>
+    </article>
+
+    <article class="cb-kpi">
+      <span class="cb-kpi-line green"></span>
+      <div>
+        <p>Pending Review</p>
+        <h2>{{ stats.pending }}</h2>
+        <small>Applications waiting for decision.</small>
+      </div>
+    </article>
+
+    <article class="cb-kpi">
+      <span class="cb-kpi-line amber"></span>
+      <div>
+        <p>Recent Activity</p>
+        <h2>{{ recentApplications.length }}</h2>
+        <small>Latest rows shown below.</small>
+      </div>
+    </article>
+
+    <article class="cb-kpi">
+      <span class="cb-kpi-line red"></span>
+      <div>
+        <p>Rejections</p>
+        <h2>{{ stats.rejected }}</h2>
+        <small>Use feedback and keep momentum.</small>
+      </div>
+    </article>
+  </section>
+
+  <article *ngIf="loading" class="cb-empty">Loading dashboard...</article>
+
+  <article *ngIf="!loading" class="cb-panel fade-in-up delay-2">
+    <header class="cb-panel-head">
+      <div>
+        <p class="cb-eyebrow">Recent Applications</p>
+        <h3>Latest pipeline updates</h3>
+      </div>
+      <button type="button" class="cb-btn cb-btn-soft" routerLink="/applications">View All</button>
+    </header>
+
+    <div class="cb-table" *ngIf="recentApplications.length > 0; else emptyState">
+      <div class="cb-table-head dashboard-grid">
+        <span>Role</span>
+        <span>Status</span>
+        <span>Date</span>
+      </div>
+
+      <article class="cb-table-row dashboard-grid" *ngFor="let app of recentApplications">
+        <div>
+          <strong>{{ app.jobTitle || app.title || 'Unknown role' }}</strong>
+          <small>{{ app.companyName || 'Company' }}</small>
+        </div>
+        <span class="cb-badge" [class.cb-badge-accepted]="normalizeStatus(app.status) === 'accepted' || normalizeStatus(app.status) === 'hired'" [class.cb-badge-rejected]="normalizeStatus(app.status) === 'rejected'" [class.cb-badge-pending]="normalizeStatus(app.status) !== 'accepted' && normalizeStatus(app.status) !== 'hired' && normalizeStatus(app.status) !== 'rejected'">
+          {{ app.status || 'pending' }}
+        </span>
+        <span>{{ app.createdAt ? (app.createdAt | date:'mediumDate') : 'Recently' }}</span>
+      </article>
+    </div>
+
+    <ng-template #emptyState>
+      <div class="cb-empty">No recent applications yet.</div>
+    </ng-template>
+  </article>
+
+  <article *ngIf="error" class="cb-error">{{ error }}</article>
+</section>

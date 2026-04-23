@@ -1,0 +1,109 @@
+<div class="layout" [class.sidebar-collapsed]="isSidebarCollapsed">
+  <aside class="sidebar" [class.collapsed]="isSidebarCollapsed">
+    <div class="logo">
+      <div class="logo-box">HB</div>
+      <div class="brand-copy" *ngIf="!isSidebarCollapsed">
+        <span class="logo-text">HireBridge</span>
+        <small>
+          {{
+            currentRole === 'employer'
+              ? 'Employer Platform'
+              : currentRole === 'client'
+              ? 'Client Portal'
+              : 'Career Platform'
+          }}
+        </small>
+      </div>
+    </div>
+
+    <ul class="sidebar-menu">
+      <li
+        *ngFor="let item of menuItems"
+        (click)="navigateFromSidebar(item)"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="getRouterLinkActiveOptions(item)"
+        [routerLink]="item.link"
+        [queryParams]="item.queryParams"
+      >
+        <i [class]="item.icon"></i>
+        <span>{{ item.label }}</span>
+      </li>
+    </ul>
+
+    <div class="sidebar-footer" *ngIf="!isSidebarCollapsed">
+      <button type="button" class="hire-btn">
+        <i class="fas fa-briefcase"></i>
+        {{
+          currentRole === 'client'
+            ? 'New Request'
+            : currentRole === 'employer'
+            ? 'Manage Hiring'
+            : 'Explore Jobs'
+        }}
+      </button>
+
+      <button type="button" class="footer-link">
+        <i class="fas fa-circle-question"></i>
+        Support
+      </button>
+
+      <button type="button" class="footer-link" (click)="logout()">
+        <i class="fas fa-arrow-right-from-bracket"></i>
+        Log Out
+      </button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button
+          type="button"
+          class="icon-btn menu-toggle"
+          (click)="toggleSidebar()"
+          aria-label="Toggle sidebar"
+        >
+          <i class="fas" [class.fa-bars]="isSidebarCollapsed" [class.fa-xmark]="!isSidebarCollapsed"></i>
+        </button>
+
+        <label class="topbar-search" aria-label="Search">
+          <i class="fas fa-search"></i>
+          <input type="search" [placeholder]="searchPlaceholder" />
+        </label>
+      </div>
+
+      <div class="topbar-actions">
+        <button class="icon-btn" type="button" aria-label="Notifications">
+          <i class="fas fa-bell"></i>
+        </button>
+        <button class="icon-btn" type="button" aria-label="Help">
+          <i class="fas fa-question"></i>
+        </button>
+
+        <div class="user-menu" (click)="toggleMenu()">
+          <div class="user-info">
+            <span class="username">{{ userName }}</span>
+            <small>{{ portalLabel }}</small>
+          </div>
+
+          <div class="avatar-wrapper">
+            <span class="avatar-text">{{ userName.charAt(0) }}</span>
+          </div>
+
+          <div class="dropdown" *ngIf="menuOpen">
+            <button type="button" class="dropdown-link" (click)="logout()">
+              <i class="fas fa-arrow-right-from-bracket"></i>
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+
+  <app-toast-outlet></app-toast-outlet>
+</div>

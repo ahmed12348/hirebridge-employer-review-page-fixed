@@ -1,0 +1,108 @@
+<div class="profile-page" *ngIf="profile as company">
+  <section class="hero-card">
+    <div class="hero-copy">
+      <a routerLink="/employer/dashboard" class="back-link">Back to dashboard</a>
+      <p class="eyebrow">Company Profile</p>
+      <h1>Employer brand and contact hub</h1>
+      <p class="hero-text">Keep your company identity polished with updated details that support every hiring request and candidate interaction.</p>
+    </div>
+
+    <aside class="hero-summary-card">
+      <div class="summary-head">
+        <div>
+          <span class="summary-label">Brand Snapshot</span>
+          <strong>{{ company.name }}</strong>
+        </div>
+        <span class="summary-badge">Employer profile</span>
+      </div>
+
+      <div class="summary-grid">
+        <article>
+          <span>Industry</span>
+          <strong>{{ company.industry }}</strong>
+        </article>
+        <article>
+          <span>Contact email</span>
+          <strong>{{ company.companyEmail || 'Not set' }}</strong>
+        </article>
+        <article>
+          <span>Website</span>
+          <strong>{{ company.website || 'Not set' }}</strong>
+        </article>
+      </div>
+    </aside>
+  </section>
+
+  <div class="success-box" *ngIf="message">{{ message }}</div>
+
+  <section class="profile-layout">
+    <section class="surface-card">
+      <div class="section-head">
+        <p class="eyebrow">Basic Information</p>
+        <h2>Company details</h2>
+      </div>
+
+      <form class="form-grid" (ngSubmit)="save()">
+        <label class="field">
+          <span>Company Name</span>
+          <input type="text" name="name" [(ngModel)]="company.name" />
+        </label>
+
+        <label class="field">
+          <span>Industry</span>
+          <input type="text" name="industry" [(ngModel)]="company.industry" />
+        </label>
+
+        <label class="field">
+          <span>Email</span>
+          <input type="email" name="companyEmail" [(ngModel)]="company.companyEmail" />
+        </label>
+
+        <label class="field">
+          <span>Website</span>
+          <input type="text" name="website" [(ngModel)]="company.website" />
+        </label>
+
+        <label class="field">
+          <span>Logo</span>
+          <input type="text" name="logo" [(ngModel)]="company.logo" />
+        </label>
+
+        <div class="actions field-wide">
+          <button type="submit" class="primary-btn save-btn" [disabled]="saving">{{ saving ? 'Saving...' : 'Save Changes' }}</button>
+        </div>
+      </form>
+    </section>
+
+    <aside class="surface-card side-panel">
+      <div class="section-head">
+        <p class="eyebrow">Employer Branding</p>
+        <h2>Profile health</h2>
+      </div>
+
+      <div class="insight-stack">
+        <article class="insight-card">
+          <span>Headline</span>
+          <strong>{{ company.name }}</strong>
+          <p>{{ company.industry }} company in the industry.</p>
+        </article>
+
+        <article class="stats-strip">
+          <div>
+            <span>Profile fields</span>
+            <strong>5 / 5</strong>
+          </div>
+          <div>
+            <span>Brand tone</span>
+            <strong>Professional</strong>
+          </div>
+        </article>
+
+        <article class="insight-card muted-card">
+          <span>Hiring tip</span>
+          <p>Keep your company details updated so every job page feels trustworthy and easy for your team to manage.</p>
+        </article>
+      </div>
+    </aside>
+  </section>
+</div>

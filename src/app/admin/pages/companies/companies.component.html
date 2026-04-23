@@ -1,0 +1,112 @@
+<section class="admin-page">
+  <article class="companies-hero fade-in-up">
+    <div>
+      <p class="db-eyebrow">Company Registry</p>
+      <h1>Client companies in one organized view</h1>
+      <p>
+        Track active clients, open hiring load, and industry distribution for better recruitment planning.
+      </p>
+    </div>
+
+    <div class="hero-metrics">
+      <article class="metric-card">
+        <span>Total Companies</span>
+        <strong>{{ companies().length }}</strong>
+      </article>
+      <article class="metric-card">
+        <span>Open Roles</span>
+        <strong>{{ totalOpenRoles() }}</strong>
+      </article>
+      <article class="metric-card">
+        <span>Industries</span>
+        <strong>{{ uniqueIndustries() }}</strong>
+      </article>
+    </div>
+  </article>
+
+  <article class="db-panel">
+    <header class="db-panel-head">
+      <div>
+        <p class="db-eyebrow">Admin Companies</p>
+        <h2>Companies list</h2>
+      </div>
+    </header>
+
+    <div class="db-table" *ngIf="companies().length; else noCompanies">
+      <div class="db-table-head companies-grid">
+        <span>ID</span>
+        <span>Company</span>
+        <span>Industry</span>
+        <span>Open Roles</span>
+        <span>Actions</span>
+      </div>
+
+      @for (company of companies(); track company.id) {
+        <article class="db-table-row companies-grid company-row">
+          <span class="company-id">{{ company.id }}</span>
+          <div class="company-main">
+            <strong>{{ company.name }}</strong>
+            <small>Enterprise client</small>
+          </div>
+          <span class="industry-pill">{{ company.industry }}</span>
+          <span class="open-roles-pill">{{ company.openRoles }} roles</span>
+          <button type="button" class="db-btn db-btn-soft company-action" (click)="openCompanyJobs(company)">
+            View Jobs
+          </button>
+        </article>
+      }
+    </div>
+
+    <ng-template #noCompanies>
+      <div class="db-empty">No companies available.</div>
+    </ng-template>
+  </article>
+
+  <div class="jobs-modal-backdrop" *ngIf="activeCompany() as company" (click)="closeCompanyJobs()">
+    <article
+      class="jobs-modal"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-label]="'Jobs for ' + company.name"
+      (click)="$event.stopPropagation()"
+    >
+      <header class="jobs-modal-head">
+        <div>
+          <p class="db-eyebrow">Company Jobs</p>
+          <h3>{{ company.name }}</h3>
+          <p class="jobs-modal-subtitle">All posted roles for this company.</p>
+        </div>
+        <button type="button" class="db-btn db-btn-ghost" (click)="closeCompanyJobs()">Close</button>
+      </header>
+
+      <div class="jobs-modal-list" *ngIf="activeCompanyJobs().length; else noCompanyJobs">
+        @for (job of activeCompanyJobs(); track job.id) {
+          <article class="job-card">
+            <div class="job-card-main">
+              <div class="job-card-title-row">
+                <h4>{{ job.title }}</h4>
+                <span class="job-status">{{ job.status }}</span>
+              </div>
+
+              <p class="job-meta">
+                {{ job.location }} • {{ job.workType }} • {{ job.openRoles }} role{{ job.openRoles === 1 ? '' : 's' }}
+              </p>
+
+              <p class="job-skills" *ngIf="job.skills.length">
+                {{ job.skills.join(' • ') }}
+              </p>
+            </div>
+
+            <button type="button" class="db-btn db-btn-primary" (click)="viewJobDetails(job.id)">
+              View Details
+            </button>
+          </article>
+        }
+      </div>
+
+      <ng-template #noCompanyJobs>
+        <div class="db-empty">No jobs found for this company.</div>
+      </ng-template>
+    </article>
+  </div>
+</section>

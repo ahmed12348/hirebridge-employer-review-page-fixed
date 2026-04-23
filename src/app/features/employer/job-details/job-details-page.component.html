@@ -1,0 +1,313 @@
+<div class="job-details-page">
+  <div *ngIf="error" class="message error">{{ error }}</div>
+  <div *ngIf="loading" class="message">Loading job details...</div>
+
+  <ng-container *ngIf="!loading && job as currentJob">
+    <section class="hero-card">
+      <div class="hero-copy">
+        <a routerLink="/employer/jobs" class="back-link">Back to hiring requests</a>
+        <p class="eyebrow">Hiring Request Details</p>
+        <h1>{{ currentJob.title }}</h1>
+        <p class="hero-text">
+          Review the full hiring brief, track recruitment progress, and manage shortlisted candidates and interview activity from one page.
+        </p>
+      </div>
+
+      <aside class="hero-summary">
+        <div class="summary-item">
+          <span>Status</span>
+          <strong>{{ statusSummary }}</strong>
+        </div>
+        <div class="summary-item">
+          <span>Requested Headcount</span>
+          <strong>{{ currentJob.openRoles }}</strong>
+        </div>
+        <div class="summary-item">
+          <span>Remaining</span>
+          <strong>{{ remainingHeadcount }}</strong>
+        </div>
+        <div class="summary-item">
+          <span>Average Fit</span>
+          <strong>{{ averageFitScore }}%</strong>
+        </div>
+      </aside>
+    </section>
+
+    <section class="stats-grid">
+      <article class="stat-card">
+        <span>Department</span>
+        <strong>{{ currentJob.department || currentJob.category }}</strong>
+      </article>
+      <article class="stat-card">
+        <span>Location</span>
+        <strong>{{ currentJob.location }}</strong>
+      </article>
+      <article class="stat-card">
+        <span>Budget</span>
+        <strong>{{ currentJob.salary | currency:'EGP ':'symbol':'1.0-0' }}</strong>
+      </article>
+      <article class="stat-card">
+        <span>Employment Type</span>
+        <strong>{{ currentJob.type }}</strong>
+      </article>
+      <article class="stat-card">
+        <span>Experience Level</span>
+        <strong>{{ currentJob.experienceLevel }}</strong>
+      </article>
+      <article class="stat-card">
+        <span>Deadline</span>
+        <strong>{{ currentJob.deadline | date:'mediumDate' }}</strong>
+      </article>
+      <article class="stat-card">
+        <span>Recommended Candidates</span>
+        <strong>{{ recommendedCandidatesCount }}</strong>
+      </article>
+      <article class="stat-card">
+        <span>Completed Interviews</span>
+        <strong>{{ completedInterviewsCount }}</strong>
+      </article>
+    </section>
+
+    <section class="details-grid">
+      <article class="surface-card main-details-card">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Request Summary</p>
+            <h2>Role overview</h2>
+          </div>
+          <a class="ghost-btn" routerLink="/employer/jobs/new">Submit another request</a>
+        </div>
+
+        <section class="detail-section">
+          <h3>Snapshot</h3>
+          <div class="summary-grid compact-summary-grid">
+            <div class="summary-box summary-box-wide">
+              <span>Hiring Summary</span>
+              <strong>{{ hiringSummary }}</strong>
+            </div>
+            <div class="summary-box">
+              <span>Priority</span>
+              <strong>{{ currentJob.priority }}</strong>
+            </div>
+            <div class="summary-box">
+              <span>Created</span>
+              <strong>{{ currentJob.createdAt | date:'mediumDate' }}</strong>
+            </div>
+            <div class="summary-box">
+              <span>Minimum Experience</span>
+              <strong>{{ currentJob.minExperience }} years</strong>
+            </div>
+          </div>
+        </section>
+
+        <div class="detail-columns">
+          <section class="detail-section">
+            <h3>Full job information</h3>
+            <div class="copy-block description-block">
+              <p>{{ currentJob.description }}</p>
+            </div>
+          </section>
+
+          <section class="detail-section">
+            <h3>Job metadata</h3>
+            <div class="metadata-grid">
+              <div class="metadata-item">
+                <span>Department</span>
+                <strong>{{ currentJob.department || currentJob.category }}</strong>
+              </div>
+              <div class="metadata-item">
+                <span>Work setup</span>
+                <strong>{{ currentJob.type }}</strong>
+              </div>
+              <div class="metadata-item">
+                <span>Location</span>
+                <strong>{{ currentJob.location }}</strong>
+              </div>
+              <div class="metadata-item">
+                <span>Deadline</span>
+                <strong>{{ currentJob.deadline | date:'mediumDate' }}</strong>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <section class="detail-section">
+          <h3>Recruitment progress</h3>
+          <div class="progress-card">
+            <div class="progress-head">
+              <strong>{{ progressPercent }}%</strong>
+              <span>{{ hiredCandidatesCount }} of {{ currentJob.openRoles }} positions filled</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="progressPercent"></div>
+            </div>
+            <div class="progress-grid">
+              <div>
+                <span>Recommended</span>
+                <strong>{{ recommendedCandidatesCount }}</strong>
+              </div>
+              <div>
+                <span>Shared</span>
+                <strong>{{ sentCandidatesCount }}</strong>
+              </div>
+              <div>
+                <span>Interviews</span>
+                <strong>{{ upcomingInterviewsCount }}</strong>
+              </div>
+              <div>
+                <span>Hired</span>
+                <strong>{{ hiredCandidatesCount }}</strong>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="detail-section" *ngIf="currentJob.skillsRequired.length">
+          <h3>Skills</h3>
+          <div class="skills-row">
+            <span class="skill-pill" *ngFor="let skill of currentJob.skillsRequired">{{ skill }}</span>
+          </div>
+        </section>
+      </article>
+
+      <aside class="surface-card side-details-card">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Interview Summary</p>
+            <h2>Role-linked interviews</h2>
+          </div>
+          <a class="text-link" routerLink="/employer/interviews">Open interview hub</a>
+        </div>
+
+        <div class="interview-list" *ngIf="interviews.length; else emptyInterviews">
+          <article class="interview-card" *ngFor="let interview of interviews">
+            <div class="interview-head">
+              <div>
+                <h3>{{ interview.candidateName }}</h3>
+                <p>{{ currentJob.title }} • {{ interview.date | date:'mediumDate' }} at {{ interview.time }}</p>
+              </div>
+              <span class="status-pill">{{ getStatusLabel(interview.status) }}</span>
+            </div>
+            <div class="interview-meta">
+              <span>{{ interview.type }}</span>
+              <span>{{ interview.interviewerName || 'Hiring team' }}</span>
+              <span>Outcome: {{ interview.outcome || 'pending' }}</span>
+              <span>{{ interview.meetingLink ? 'Meeting link ready' : (interview.location || 'TBD') }}</span>
+            </div>
+            <p *ngIf="interview.notes" class="interview-notes">{{ interview.notes }}</p>
+          </article>
+        </div>
+
+        <ng-template #emptyInterviews>
+          <div class="empty-state">No interviews are linked to this request yet.</div>
+        </ng-template>
+
+        <section class="detail-section timeline-block">
+          <h3>Activity timeline</h3>
+          <div class="timeline-list">
+            <div class="timeline-item">
+              <strong>Request submitted</strong>
+              <span>{{ currentJob.createdAt | date:'mediumDate' }}</span>
+            </div>
+            <div class="timeline-item">
+              <strong>HireBridge shortlisting in progress</strong>
+              <span>{{ sentCandidatesCount }} candidate{{ sentCandidatesCount === 1 ? '' : 's' }} shared</span>
+            </div>
+            <div class="timeline-item">
+              <strong>Interview coordination</strong>
+              <span>{{ upcomingInterviewsCount }} active interview{{ upcomingInterviewsCount === 1 ? '' : 's' }}</span>
+            </div>
+            <div class="timeline-item">
+              <strong>Probation follow-up</strong>
+              <span>{{ hiredCandidatesCount }} hire{{ hiredCandidatesCount === 1 ? '' : 's' }} to track</span>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </section>
+
+    <section class="surface-card applicants-panel">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Recommended Candidates</p>
+          <h2>Profiles shared for company review</h2>
+        </div>
+        <a class="ghost-btn" [routerLink]="reviewCandidatesLink">Review Candidates</a>
+      </div>
+
+      <div class="candidate-grid" *ngIf="applicants.length; else emptyApplicants">
+        <article class="candidate-card" *ngFor="let applicant of applicants | slice:0:3">
+          <div class="candidate-head">
+            <div>
+              <h3>{{ applicant.candidateName }}</h3>
+              <p>{{ applicant.department }} • {{ applicant.experienceYears || 0 }} years experience</p>
+            </div>
+            <span class="status-pill score-pill">{{ applicant.fitScore || 0 }}% fit</span>
+          </div>
+
+          <div class="candidate-layout">
+            <div class="candidate-main">
+              <div class="candidate-meta-grid compact-grid">
+                <div class="meta-box">
+                  <span>Email</span>
+                  <strong>{{ applicant.email }}</strong>
+                </div>
+                <div class="meta-box">
+                  <span>Expected salary</span>
+                  <strong>{{ applicant.salaryExpectation | currency:'EGP ':'symbol':'1.0-0' }}</strong>
+                </div>
+                <div class="meta-box">
+                  <span>Work type</span>
+                  <strong>{{ applicant.workType || 'Flexible' }}</strong>
+                </div>
+                <div class="meta-box">
+                  <span>Company decision</span>
+                  <strong>{{ getCompanyDecisionLabel(applicant) }}</strong>
+                </div>
+              </div>
+
+              <div class="candidate-copy">
+                <p>{{ applicant.notes || 'No summary available yet.' }}</p>
+              </div>
+            </div>
+
+            <aside class="candidate-side">
+              <div class="match-grid compact-grid">
+                <div class="match-box">
+                  <span>Skill match</span>
+                  <strong>{{ applicant.fitScore || 0 }}%</strong>
+                </div>
+                <div class="match-box">
+                  <span>Salary compatibility</span>
+                  <strong>{{ getSalaryMatchLabel(applicant.salaryMatch) }}</strong>
+                </div>
+                <div class="match-box">
+                  <span>Trust score</span>
+                  <strong>{{ applicant.trustScore || 0 }}/100</strong>
+                </div>
+                <div class="match-box">
+                  <span>Probation prediction</span>
+                  <strong>{{ getProbationLabel(applicant.probationPrediction) }}</strong>
+                </div>
+              </div>
+
+              <div class="insight-row">
+                <span class="tag-pill">{{ getApplicantStatusLabel(applicant.status) }}</span>
+                <span class="tag-pill neutral">{{ getFraudRiskLabel(applicant.fraudRisk) }}</span>
+              </div>
+            </aside>
+          </div>
+        </article>
+      </div>
+
+      <div class="preview-footer" *ngIf="applicants.length > 3">
+        <span>{{ applicants.length - 3 }} more candidate{{ applicants.length - 3 === 1 ? '' : 's' }} available for company review.</span>
+        <a class="text-link" [routerLink]="reviewCandidatesLink">Open full review page</a>
+      </div>
+
+      <ng-template #emptyApplicants>
+        <div class="empty-state">No recommended candidates are linked to this request yet.</div>
+      </ng-template>
+    </section>
+  </ng-container>
+</div>

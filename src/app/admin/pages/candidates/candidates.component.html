@@ -1,0 +1,127 @@
+<section class="admin-page">
+  <article class="candidates-hero fade-in-up">
+    <div class="hero-copy">
+      <p class="db-eyebrow">Candidate Hub</p>
+      <h1 *ngIf="isMatchingMode() && currentJob() as job">Matching candidates for {{ job.title }}</h1>
+      <h1 *ngIf="!isMatchingMode()">Candidate shortlisting workspace</h1>
+      <p>
+        Open CVs, send strong matches, and keep the shortlist tidy with fast send and cancel actions.
+      </p>
+    </div>
+
+    <div class="hero-metrics">
+      <article class="metric-card">
+        <span>Visible Profiles</span>
+        <strong>{{ candidates().length }}</strong>
+      </article>
+      <article class="metric-card">
+        <span>Average Fit</span>
+        <strong>{{ averageFitScore() }}%</strong>
+      </article>
+      <article class="metric-card" *ngIf="isMatchingMode()">
+        <span>Sent For This Job</span>
+        <strong>{{ sentForCurrentJob() }}</strong>
+      </article>
+    </div>
+  </article>
+
+  <article class="db-panel">
+    <header class="db-panel-head">
+      <div>
+        <p class="db-eyebrow">Matching Candidates</p>
+        <h2 *ngIf="isMatchingMode() && currentJob() as job">Candidates suitable for {{ job.title }}</h2>
+        <h2 *ngIf="!isMatchingMode()">Candidates list</h2>
+      </div>
+      <button
+        *ngIf="isMatchingMode()"
+        type="button"
+        class="db-btn db-btn-soft sent-list-btn"
+        (click)="openSentList()"
+      >
+        View Sent List
+      </button>
+    </header>
+
+    <div class="db-table" *ngIf="candidates().length; else noCandidates">
+      <div class="db-table-head candidates-grid">
+        <span>ID</span>
+        <span>Candidate</span>
+        <span>Role</span>
+        <span>Experience</span>
+        <span>Fit</span>
+        <span>Actions</span>
+      </div>
+
+      @for (candidate of candidates(); track candidate.id) {
+        <div class="db-table-row candidates-grid candidate-row">
+          <span class="candidate-id">{{ candidate.id }}</span>
+          <div class="candidate-main">
+            <strong>{{ candidate.name }}</strong>
+            <small>{{ candidate.expectedSalary | currency:'EGP ':'symbol':'1.0-0' }}</small>
+          </div>
+          <span>{{ candidate.role }}</span>
+          <span>{{ candidate.experience }}</span>
+          <span class="db-status">{{ candidate.fitScore }}%</span>
+          <div class="db-btn-group">
+            <button type="button" class="db-btn db-btn-ghost" (click)="openCv(candidate)">CV</button>
+            <button
+              *ngIf="isMatchingMode() && !isSent(candidate.id)"
+              type="button"
+              class="db-btn db-btn-primary"
+              (click)="sendCandidate(candidate)"
+            >
+              Send
+            </button>
+            <button
+              *ngIf="isMatchingMode() && isSent(candidate.id)"
+              type="button"
+              class="db-btn db-btn-danger"
+              (click)="cancelCandidate(candidate)"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+
+    <ng-template #noCandidates>
+      <div class="db-empty">No candidates available.</div>
+    </ng-template>
+  </article>
+
+  <div class="cv-overlay" *ngIf="selectedCandidate() as cvCandidate" (click)="closeCv()">
+    <article class="cv-modal" (click)="$event.stopPropagation()">
+      <header class="cv-head">
+        <div>
+          <p class="db-eyebrow">Candidate CV</p>
+          <h3>{{ cvCandidate.name }}</h3>
+        </div>
+        <button type="button" class="db-btn db-btn-soft close-btn" (click)="closeCv()">Close</button>
+      </header>
+
+      <section class="cv-body">
+        <div class="cv-grid">
+          <div>
+            <span>Target Role</span>
+            <strong>{{ cvCandidate.role }}</strong>
+          </div>
+          <div>
+            <span>Experience</span>
+            <strong>{{ cvCandidate.experience }}</strong>
+          </div>
+          <div>
+            <span>Expected Salary</span>
+            <strong>{{ cvCandidate.expectedSalary | currency:'EGP ':'symbol':'1.0-0' }}</strong>
+          </div>
+          <div>
+            <span>Fit Score</span>
+            <strong>{{ cvCandidate.fitScore }}%</strong>
+          </div>
+        </div>
+
+        <p class="cv-summary">{{ cvCandidate.cvSummary }}</p>
+      </section>
+    </article>
+  </div>
+</section>

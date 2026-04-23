@@ -1,0 +1,334 @@
+<div class="review-page" *ngIf="!loading && currentJob; else loadingState">
+  <section class="hero-card">
+    <div class="hero-copy">
+      <a class="back-link" [routerLink]="requestDetailsLink">Back to request details</a>
+      <p class="eyebrow">Company Review</p>
+      <h1>Review candidates for {{ currentJob.title }}</h1>
+      <p class="review-subtitle">{{ currentJob.department || currentJob.category }} • {{ visibleApplicants.length }} active applications</p>
+      <p class="hero-text">HireBridge already shared the most relevant profiles for this request. Accept, reject, request a replacement, or move approved candidates to interview scheduling from one clear review page.</p>
+
+      <div class="hero-tags review-flags">
+        <span class="tag-pill" *ngIf="averageFitScore >= 85">High sentiment</span>
+        <span class="tag-pill" *ngIf="currentJob.priority === 'high'">Premium role</span>
+        <span class="tag-pill">{{ currentJob.department || currentJob.category }}</span>
+        <span class="tag-pill">{{ currentJob.location }}</span>
+        <span class="tag-pill">{{ currentJob.openRoles }} headcount</span>
+      </div>
+    </div>
+
+    <div class="hero-summary">
+      <div class="summary-item">
+        <span>Profiles sent</span>
+        <strong>{{ visibleApplicants.length }}</strong>
+      </div>
+      <div class="summary-item">
+        <span>Pending review</span>
+        <strong>{{ pendingApplicants.length }}</strong>
+      </div>
+      <div class="summary-item">
+        <span>Accepted</span>
+        <strong>{{ acceptedApplicants.length }}</strong>
+      </div>
+      <div class="summary-item">
+        <span>Scheduled interviews</span>
+        <strong>{{ scheduledInterviewCount }}</strong>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats-grid">
+    <article class="stat-card">
+      <span>Review progress</span>
+      <strong>{{ reviewProgressPercent }}%</strong>
+      <small>{{ visibleApplicants.length ? 'Company decisions submitted for sent profiles' : 'No candidate has been shared yet' }}</small>
+    </article>
+    <article class="stat-card">
+      <span>Average fit score</span>
+      <strong>{{ averageFitScore }}%</strong>
+      <small>Combined matching quality across shared candidates</small>
+    </article>
+    <article class="stat-card">
+      <span>Replacement requests</span>
+      <strong>{{ replacementApplicants.length }}</strong>
+      <small>Profiles needing a stronger alternative</small>
+    </article>
+    <article class="stat-card">
+      <span>Marked hired</span>
+      <strong>{{ hiredApplicants.length }}</strong>
+      <small>Shared profiles converted to confirmed hires</small>
+    </article>
+  </section>
+
+  <section class="surface-card review-panel">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Candidate Decisions</p>
+        <h2>Sent candidates</h2>
+      </div>
+      <a class="ghost-btn" [routerLink]="requestDetailsLink">Open request details</a>
+    </div>
+
+    <div *ngIf="actionError" class="message error inline-message">{{ actionError }}</div>
+    <div *ngIf="actionSuccess" class="message inline-message">{{ actionSuccess }}</div>
+
+    <div class="decision-toolbar" *ngIf="visibleApplicants.length">
+      <div class="tab-row">
+        <button type="button" class="tab-btn" [class.active]="activeTab === 'pending'" (click)="setActiveTab('pending')">
+          Candidates <span>{{ pendingApplicants.length }}</span>
+        </button>
+        <button type="button" class="tab-btn" [class.active]="activeTab === 'accepted'" (click)="setActiveTab('accepted')">
+          Accepted <span>{{ acceptedApplicants.length }}</span>
+        </button>
+        <button type="button" class="tab-btn" [class.active]="activeTab === 'rejected'" (click)="setActiveTab('rejected')">
+          Rejected <span>{{ rejectedApplicants.length }}</span>
+        </button>
+        <button type="button" class="tab-btn" [class.active]="activeTab === 'replacement'" (click)="setActiveTab('replacement')">
+          Replacement <span>{{ replacementApplicants.length }}</span>
+        </button>
+        <button type="button" class="tab-btn" [class.active]="activeTab === 'hired'" (click)="setActiveTab('hired')">
+          Hired <span>{{ hiredApplicants.length }}</span>
+        </button>
+      </div>
+
+      <div class="tab-copy">
+        <strong>{{ activeTabLabel }}</strong>
+        <span>{{ displayedApplicants.length }} candidate{{ displayedApplicants.length === 1 ? '' : 's' }} in this view</span>
+      </div>
+    </div>
+
+    <div *ngIf="visibleApplicants.length; else emptySharedCandidates" class="candidate-grid">
+      <article class="candidate-card" *ngFor="let applicant of displayedApplicants" [class.selected-card]="isSelectedApplicant(applicant.id)">
+        <div class="candidate-head">
+          <div class="candidate-identity">
+            <div class="candidate-avatar">{{ getInitials(applicant.candidateName) }}</div>
+            <div>
+            <h3>{{ applicant.candidateName }}</h3>
+              <p>{{ applicant.department }} • {{ applicant.experienceYears || 0 }} years experience</p>
+              <p>{{ applicant.email }}</p>
+            </div>
+          </div>
+          <span class="status-pill score-pill">{{ applicant.fitScore || 0 }}% fit</span>
+        </div>
+
+        <div class="candidate-layout">
+          <div class="candidate-main">
+            <div class="candidate-meta-grid compact-grid">
+              <div class="meta-box">
+                <span>Match score</span>
+                <strong>{{ applicant.fitScore || 0 }}%</strong>
+              </div>
+              <div class="meta-box">
+                <span>Expected salary</span>
+                <strong>{{ applicant.salaryExpectation | currency:'EGP ':'symbol':'1.0-0' }}</strong>
+              </div>
+              <div class="meta-box">
+                <span>Salary fit</span>
+                <strong>{{ getSalaryMatchLabel(applicant.salaryMatch) }}</strong>
+              </div>
+              <div class="meta-box">
+                <span>Status</span>
+                <strong>{{ getCompanyDecisionLabel(applicant) }}</strong>
+              </div>
+            </div>
+
+            <div class="candidate-copy summary-copy">
+              <p><strong>Summary:</strong> {{ applicant.notes || 'No summary available yet.' }}</p>
+            </div>
+          </div>
+
+          <aside class="candidate-side">
+            <div class="match-grid compact-grid">
+              <div class="match-box">
+                <span>Trust score</span>
+                <strong>{{ applicant.trustScore || 0 }}</strong>
+              </div>
+              <div class="match-box">
+                <span>Probation outlook</span>
+                <strong>{{ getProbationLabel(applicant.probationPrediction) }}</strong>
+              </div>
+              <div class="match-box">
+                <span>Work type</span>
+                <strong>{{ applicant.workType || 'Flexible' }}</strong>
+              </div>
+            </div>
+
+            <div class="insight-row">
+              <span class="tag-pill neutral">{{ getCompanyDecisionLabel(applicant) }}</span>
+              <span class="tag-pill neutral">{{ getFraudRiskLabel(applicant.fraudRisk) }}</span>
+            </div>
+          </aside>
+        </div>
+
+        <div class="actions-toolbar action-groups">
+          <div class="primary-actions">
+            <button type="button" class="accept-btn" (click)="acceptCandidate(applicant)" [disabled]="processingApplicantId === applicant.id || applicant.companyDecision === 'accepted_for_interview' || applicant.companyDecision === 'hired'">
+              {{ processingApplicantId === applicant.id ? 'Saving...' : 'Accept' }}
+            </button>
+            <button type="button" class="secondary-action" (click)="scheduleInterview(applicant)" [disabled]="processingApplicantId === applicant.id || (applicant.companyDecision !== 'accepted_for_interview' && applicant.companyDecision !== 'hired')">
+              Schedule interview
+            </button>
+          </div>
+
+          <div class="secondary-actions">
+            <button type="button" class="secondary-action" (click)="markHired(applicant)" [disabled]="processingApplicantId === applicant.id || applicant.companyDecision === 'hired'">
+              Mark hired
+            </button>
+            <button type="button" class="secondary-action warn" (click)="requestReplacement(applicant)" [disabled]="processingApplicantId === applicant.id || applicant.companyDecision === 'request_replacement'">
+              Request replacement
+            </button>
+            <button type="button" class="reject-btn" (click)="rejectCandidate(applicant)" [disabled]="processingApplicantId === applicant.id || applicant.companyDecision === 'rejected'">
+              Reject
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <div class="empty-tab" *ngIf="displayedApplicants.length === 0">
+        No candidates in {{ activeTabLabel.toLowerCase() }} right now.
+      </div>
+    </div>
+
+    <ng-template #emptySharedCandidates>
+      <div class="empty-state">
+        No candidates have been shared with the company for this request yet. Once HireBridge sends shortlisted profiles,
+        they will appear here for accept, reject, or replacement actions.
+      </div>
+    </ng-template>
+  </section>
+
+  <section class="surface-card review-panel">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Interview Review</p>
+        <h2>Scheduled interviews</h2>
+      </div>
+    </div>
+
+    <div class="interview-grid" *ngIf="interviews.length; else noInterviews">
+      <article class="interview-card" *ngFor="let interview of interviews">
+        <div class="candidate-head">
+          <div>
+            <h3>{{ interview.candidateName }}</h3>
+            <p>{{ interview.date | date:'mediumDate' }} at {{ interview.time }}</p>
+          </div>
+          <span class="tag-pill">{{ getInterviewStatusLabel(interview.status) }}</span>
+        </div>
+
+        <div class="candidate-meta-grid interview-meta-grid">
+          <div class="meta-box">
+            <span>Type</span>
+            <strong>{{ getInterviewTypeLabel(interview) }}</strong>
+          </div>
+          <div class="meta-box">
+            <span>Interviewer</span>
+            <strong>{{ interview.interviewerName || 'Hiring team' }}</strong>
+          </div>
+          <div class="meta-box">
+            <span>Outcome</span>
+            <strong>{{ interview.outcome || 'pending' }}</strong>
+          </div>
+        </div>
+
+        <div class="candidate-copy">
+          <p>{{ interview.notes || 'No interview notes added yet.' }}</p>
+        </div>
+      </article>
+    </div>
+
+    <ng-template #noInterviews>
+      <div class="empty-state">
+        No interviews scheduled yet. Accept a candidate, then use the schedule button to add the interview details.
+      </div>
+    </ng-template>
+  </section>
+</div>
+
+<ng-template #loadingState>
+  <div class="surface-card empty-state" *ngIf="loading">Loading company review page...</div>
+  <div class="surface-card message error" *ngIf="!loading && error">{{ error }}</div>
+</ng-template>
+
+<div
+  class="modal-backdrop interview-modal-backdrop"
+  *ngIf="interviewModalApplicant as applicant"
+  (click)="trackInterviewModalBackdrop($event)"
+  style="position: fixed; inset: 0; width: 100vw; height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 18px; z-index: 120;"
+>
+  <section class="modal-card interview-modal-card" style="position: fixed; top: 50dvh; left: 50vw; transform: translate(-50%, -50%); width: min(900px, calc(100vw - 36px)); max-height: calc(100dvh - 36px); margin: 0; overflow-y: auto;">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Schedule Interview</p>
+        <h2>{{ applicant.candidateName }}</h2>
+        <p class="hero-text">Add the interview details, then submit to show them on this review page.</p>
+      </div>
+      <button type="button" class="ghost-btn close-modal-btn" (click)="closeInterviewModal()">Close</button>
+    </div>
+
+    <div class="modal-highlight">
+      <div class="highlight-item">
+        <span>Candidate</span>
+        <strong>{{ applicant.candidateName }}</strong>
+      </div>
+      <div class="highlight-item">
+        <span>Role</span>
+        <strong>{{ currentJob.title }}</strong>
+      </div>
+      <div class="highlight-item">
+        <span>Current status</span>
+        <strong>{{ getCompanyDecisionLabel(applicant) }}</strong>
+      </div>
+    </div>
+
+    <form class="schedule-form" (ngSubmit)="submitInterviewSchedule()">
+      <div class="form-grid">
+        <label class="form-field">
+          <span>Date</span>
+          <input type="date" name="date" [(ngModel)]="interviewForm.date" required />
+        </label>
+
+        <label class="form-field">
+          <span>Time</span>
+          <input type="time" name="time" [(ngModel)]="interviewForm.time" required />
+        </label>
+
+        <label class="form-field">
+          <span>Interview type</span>
+          <select name="type" [(ngModel)]="interviewForm.type">
+            <option value="Online">Online</option>
+            <option value="Onsite">Onsite</option>
+            <option value="Phone">Phone</option>
+          </select>
+        </label>
+
+        <label class="form-field">
+          <span>Interviewer</span>
+          <input type="text" name="interviewerName" [(ngModel)]="interviewForm.interviewerName" placeholder="Hiring manager" />
+        </label>
+
+        <label class="form-field form-field-full" *ngIf="interviewForm.type === 'Online'">
+          <span>Meeting link</span>
+          <input type="url" name="meetingLink" [(ngModel)]="interviewForm.meetingLink" placeholder="https://meet.example.com/room" />
+        </label>
+
+        <label class="form-field form-field-full" *ngIf="interviewForm.type === 'Onsite'">
+          <span>Location</span>
+          <input type="text" name="location" [(ngModel)]="interviewForm.location" placeholder="Office address" />
+        </label>
+
+        <label class="form-field form-field-full">
+          <span>Notes</span>
+          <textarea name="notes" rows="3" [(ngModel)]="interviewForm.notes" placeholder="What should the interview focus on?"></textarea>
+        </label>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="secondary-action" (click)="closeInterviewModal()" [disabled]="processingApplicantId === applicant.id">
+          Cancel
+        </button>
+        <button type="submit" class="accept-btn" [disabled]="processingApplicantId === applicant.id">
+          {{ processingApplicantId === applicant.id ? 'Saving...' : 'Submit interview' }}
+        </button>
+      </div>
+    </form>
+  </section>
+</div>

@@ -1,0 +1,71 @@
+<section class="candidate-page">
+  <article class="cb-hero fade-in-up">
+    <div>
+      <p class="cb-eyebrow">Candidate Profile</p>
+      <h1>Keep your profile market-ready.</h1>
+      <p>
+        Update your specialization, level, and salary expectations so matching quality stays high.
+      </p>
+    </div>
+
+    <aside class="identity-card">
+      <div class="avatar">{{ user?.name?.charAt(0)?.toUpperCase() || 'U' }}</div>
+      <div>
+        <strong>{{ user?.name || 'User' }}</strong>
+        <small>{{ user?.email || 'user@example.com' }}</small>
+      </div>
+      <button type="button" class="cb-btn cb-btn-soft" (click)="loadProfile()" [disabled]="loadingProfile || savingProfile">
+        {{ loadingProfile ? 'Refreshing...' : 'Refresh' }}
+      </button>
+    </aside>
+  </article>
+
+  <article *ngIf="loadingProfile" class="cb-empty">Loading your saved profile...</article>
+  <article *ngIf="successMessage" class="cb-success-box">{{ successMessage }}</article>
+  <article *ngIf="error" class="cb-error">{{ error }}</article>
+
+  <article class="cb-panel fade-in-up delay-1">
+    <header class="cb-panel-head">
+      <div>
+        <p class="cb-eyebrow">Edit Details</p>
+        <h3>Profile information</h3>
+      </div>
+    </header>
+
+    <form [formGroup]="profileForm" (ngSubmit)="submit()" class="profile-form">
+      <label>
+        <span>Specialization</span>
+        <input type="text" formControlName="specialization" placeholder="Frontend Developer" />
+      </label>
+
+      <label>
+        <span>Experience Level</span>
+        <select formControlName="experienceLevel">
+          <option value="">Select experience level</option>
+          <option value="Junior">Junior</option>
+          <option value="Mid">Mid</option>
+          <option value="Senior">Senior</option>
+        </select>
+      </label>
+
+      <label>
+        <span>Expected Salary</span>
+        <input type="number" formControlName="expectedSalary" placeholder="10000" />
+      </label>
+
+      <label>
+        <span>Work Type</span>
+        <select formControlName="workType">
+          <option value="">Select work type</option>
+          <option value="Full Time">Full Time</option>
+          <option value="Part Time">Part Time</option>
+          <option value="Remote">Remote</option>
+        </select>
+      </label>
+
+      <button type="submit" class="cb-btn cb-btn-primary submit-btn" [disabled]="savingProfile">
+        {{ savingProfile ? 'Saving...' : 'Save Profile' }}
+      </button>
+    </form>
+  </article>
+</section>

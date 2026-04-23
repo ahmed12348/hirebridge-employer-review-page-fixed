@@ -1,0 +1,167 @@
+<div class="cjp-page">
+  <header class="cjp-header">
+    <div class="cjp-header-copy">
+      <div class="cjp-breadcrumbs">
+        <a routerLink="/employer/jobs">Hiring Requests</a>
+        <span>/</span>
+        <span>New Request</span>
+      </div>
+      <h1>Submit Hiring Request</h1>
+      <p>Fill your request details once, then track review, candidate matching, and interview progress from your dashboard.</p>
+    </div>
+
+    <div class="cjp-header-meta">
+    </div>
+  </header>
+
+  <div *ngIf="error" class="cjp-alert">{{ error }}</div>
+
+  <div class="cjp-layout">
+    <form class="cjp-main" (ngSubmit)="submit()">
+      <section class="cjp-card">
+        <div class="cjp-card-head">
+          <h2>Basic Information</h2>
+        </div>
+
+        <div class="cjp-grid">
+          <label class="cjp-field cjp-field-full">
+            <span>Job title</span>
+            <input type="text" [(ngModel)]="form.title" name="title" placeholder="e.g. Senior Product Designer" />
+          </label>
+
+          <label class="cjp-field">
+            <span>Category</span>
+            <input type="text" [(ngModel)]="form.category" name="category" placeholder="Engineering" />
+          </label>
+
+          <label class="cjp-field">
+            <span>Work type</span>
+            <select [(ngModel)]="form.workType" name="workType">
+              <option value="Remote">Remote</option>
+              <option value="Onsite">Onsite</option>
+              <option value="Hybrid">Hybrid</option>
+              <option value="Part Time">Part Time</option>
+              <option value="Full Time">Full Time</option>
+            </select>
+          </label>
+
+          <label class="cjp-field">
+            <span>Budget minimum</span>
+            <input type="number" min="1" [(ngModel)]="form.budget.min" name="budgetMin" placeholder="2000" />
+          </label>
+
+          <label class="cjp-field">
+            <span>Budget maximum</span>
+            <input type="number" min="1" [(ngModel)]="form.budget.max" name="budgetMax" placeholder="50000" />
+          </label>
+
+          <label class="cjp-field">
+            <span>Minimum experience (years)</span>
+            <input type="number" min="0" [(ngModel)]="form.minExperience" name="minExperience" placeholder="3" />
+          </label>
+
+          <label class="cjp-field">
+            <span>Experience level</span>
+            <select [(ngModel)]="form.experienceLevel" name="experienceLevel">
+              <option value="Junior">Junior</option>
+              <option value="Mid">Mid</option>
+              <option value="Senior">Senior</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="cjp-card">
+        <div class="cjp-card-head">
+          <h2>Job Description</h2>
+          <span>Recommended 300-500 words</span>
+        </div>
+
+        <label class="cjp-field cjp-field-full">
+          <textarea [(ngModel)]="form.description" name="description" rows="8" placeholder="Start typing the job description here..."></textarea>
+        </label>
+      </section>
+
+      <section class="cjp-card">
+        <div class="cjp-card-head">
+          <h2>Required Skills</h2>
+          <span>Add key capabilities needed for this role</span>
+        </div>
+
+        <div class="cjp-skill-input-row">
+          <input type="text" [(ngModel)]="skillInput" name="skillInput" placeholder="Angular, TypeScript, Stakeholder Management" />
+          <button type="button" class="cjp-secondary-btn" (click)="addSkill()">Add Skill</button>
+        </div>
+
+        <div class="cjp-skills" *ngIf="form.skillsRequired.length">
+          <button type="button" class="cjp-skill-pill" *ngFor="let skill of form.skillsRequired" (click)="removeSkill(skill)">
+            {{ skill }}
+            <span>x</span>
+          </button>
+        </div>
+      </section>
+
+      <div class="cjp-actions">
+        <a routerLink="/employer/jobs" class="cjp-link-btn">Cancel</a>
+        <button type="submit" class="cjp-primary-btn" [disabled]="saving">
+          {{ saving ? 'Saving...' : 'Create request' }}
+        </button>
+      </div>
+    </form>
+
+    <aside class="cjp-aside">
+      <section class="cjp-card cjp-tips-card">
+        <div class="cjp-card-head">
+          <h3>Request Summary</h3>
+        </div>
+
+        <div class="cjp-summary-list">
+          <div class="cjp-summary-item">
+            <span>Role Title</span>
+            <strong>{{ form.title || 'Not set yet' }}</strong>
+          </div>
+          <div class="cjp-summary-item">
+            <span>Department</span>
+            <strong>{{ form.category || 'Not set yet' }}</strong>
+          </div>
+          <div class="cjp-summary-item">
+            <span>Work type</span>
+            <strong>{{ form.workType || 'Not set yet' }}</strong>
+          </div>
+          <div class="cjp-summary-item">
+            <span>Minimum experience</span>
+            <strong>{{ form.minExperience || '0' }} years</strong>
+          </div>
+          <div class="cjp-summary-item">
+            <span>Budget range</span>
+            <strong>
+              {{ form.budget.min ? (form.budget.min | currency:'USD':'symbol':'1.0-0') : 'Not set yet' }}
+              -
+              {{ form.budget.max ? (form.budget.max | currency:'USD':'symbol':'1.0-0') : 'Not set yet' }}
+            </strong>
+          </div>
+          <div class="cjp-summary-item">
+            <span>Experience level</span>
+            <strong>{{ form.experienceLevel }}</strong>
+          </div>
+          <div class="cjp-summary-item">
+            <span>Skills Added</span>
+            <strong>{{ form.skillsRequired.length }}</strong>
+          </div>
+        </div>
+
+        <div class="cjp-strength">
+          <div class="cjp-strength-head">
+            <span>Completion</span>
+            <strong>
+              {{ ((form.title ? 1 : 0) + (form.category ? 1 : 0) + (form.description ? 1 : 0) + (form.workType ? 1 : 0) + (form.budget.min ? 1 : 0) + (form.budget.max ? 1 : 0) + (form.minExperience ? 1 : 0) + (form.skillsRequired.length ? 1 : 0)) * 12.5 }}%
+            </strong>
+          </div>
+          <div class="cjp-strength-bar">
+            <span [style.width.%]="((form.title ? 1 : 0) + (form.category ? 1 : 0) + (form.description ? 1 : 0) + (form.workType ? 1 : 0) + (form.budget.min ? 1 : 0) + (form.budget.max ? 1 : 0) + (form.minExperience ? 1 : 0) + (form.skillsRequired.length ? 1 : 0)) * 12.5"></span>
+          </div>
+        </div>
+      </section>
+    </aside>
+  </div>
+</div>

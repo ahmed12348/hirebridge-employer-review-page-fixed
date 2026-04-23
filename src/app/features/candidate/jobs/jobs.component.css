@@ -1,0 +1,48 @@
+@import '../candidate-page.shared.css';
+
+.hero-actions {
+  margin-top: 10px;
+}
+
+.filters-card {
+  border: 1px solid var(--cb-border);
+  border-radius: 12px;
+  padding: 10px;
+  background: #ffffff;
+  display: grid;
+  gap: 8px;
+}
+
+.filters-card input,
+.filters-card select {
+  min-height: 40px;
+  border: 1px solid #d7e2f0;
+  border-radius: 10px;
+  padding: 0 10px;
+  background: #ffffff;
+  color: #0f172a;
+}
+
+.jobs-grid {
+  grid-template-columns: minmax(230px, 1.5fr) minmax(90px, 0.6fr) minmax(100px, 0.8fr) minmax(120px, 0.8fr);
+}
+
+.job-main {
+  display: grid;
+  gap: 4px;
+}
+
+.job-main strong {
+  color: #0f1f3c;
+  font-size: 0.9rem;
+}
+
+.job-main small {
+  color: #596b83;
+  font-size: 0.76rem;
+}
+
+.score {
+  color: #0f1f3c;
+  font-size: 1rem;
+}

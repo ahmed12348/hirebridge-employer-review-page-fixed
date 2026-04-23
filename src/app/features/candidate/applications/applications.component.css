@@ -1,0 +1,226 @@
+@import '../candidate-page.shared.css';
+
+.filter-side {
+  display: grid;
+  gap: 8px;
+}
+
+.filter-side input,
+.filter-side select {
+  min-height: 40px;
+  border: 1px solid #d7e2f0;
+  border-radius: 10px;
+  padding: 0 10px;
+  background: #ffffff;
+  color: #0f172a;
+}
+
+.applications-grid {
+  grid-template-columns: minmax(260px, 1.9fr) minmax(130px, 0.8fr) minmax(220px, 1.2fr) minmax(120px, 0.75fr) minmax(230px, 0.95fr);
+}
+
+.col-role,
+.col-status,
+.col-interview,
+.col-date,
+.col-actions {
+  width: 100%;
+}
+
+.col-status,
+.col-date {
+  justify-self: start;
+  align-self: center;
+}
+
+.col-actions {
+  justify-self: center;
+  text-align: center;
+}
+
+.cb-table-head .col-actions {
+  justify-self: center;
+}
+
+.role-cell,
+.interview-cell,
+.status-cell {
+  display: grid;
+  gap: 4px;
+  align-content: center;
+  min-height: 52px;
+}
+
+.status-cell {
+  justify-self: start;
+}
+
+.status-cell .cb-badge {
+  width: auto;
+  max-width: max-content;
+  white-space: nowrap;
+}
+
+.app-row {
+  padding: 13px 12px;
+  transition: transform 160ms ease, box-shadow 200ms ease, border-color 180ms ease;
+}
+
+.app-row:hover {
+  transform: translateY(-1px);
+  border-color: #c8d8ee;
+  box-shadow: 0 14px 26px rgba(15, 23, 42, 0.08);
+}
+
+.role-cell strong,
+.interview-cell strong {
+  color: #0f1f3c;
+  font-size: 0.92rem;
+}
+
+.role-cell small,
+.interview-cell small,
+.interview-cell a,
+.muted {
+  color: #596b83;
+  font-size: 0.76rem;
+}
+
+.muted-block {
+  min-height: 52px;
+}
+
+.interview-cell a {
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.date-cell {
+  color: #334155;
+  font-size: 0.78rem;
+  font-weight: 700;
+  justify-self: start;
+  align-self: center;
+  white-space: nowrap;
+}
+
+.action-group {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(100px, 1fr));
+  gap: 8px;
+  justify-self: center;
+  align-self: center;
+  width: 100%;
+  max-width: 224px;
+}
+
+.action-group.final-state {
+  grid-template-columns: 1fr;
+  max-width: 150px;
+}
+
+.decision-btn {
+  min-height: 42px;
+  border: 1px solid #d7e2f0;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.015em;
+  transition: transform 160ms ease, box-shadow 200ms ease, filter 160ms ease, border-color 200ms ease;
+}
+
+.decision-btn i {
+  font-size: 0.82rem;
+}
+
+.decision-btn:hover {
+  transform: translateY(-2px);
+}
+
+.decision-btn:active {
+  transform: translateY(0);
+}
+
+.decision-btn-accept {
+  color: #ffffff;
+  border-color: #1d4fd3;
+  background: linear-gradient(180deg, #3475ff 0%, #1f5bda 100%);
+  box-shadow: 0 12px 24px rgba(31, 91, 218, 0.34);
+}
+
+.decision-btn-accept:hover {
+  filter: brightness(1.08);
+}
+
+.decision-btn-reject {
+  color: #9f1239;
+  border-color: #f8bfd4;
+  background: linear-gradient(180deg, #fff1f7 0%, #ffe5ef 100%);
+  box-shadow: 0 9px 18px rgba(159, 18, 57, 0.14);
+}
+
+.decision-btn-reject:hover {
+  border-color: #f3a9c4;
+  background: linear-gradient(180deg, #ffe8f2 0%, #ffdbe9 100%);
+}
+
+.decision-lock {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  border-radius: 12px;
+  padding: 0 16px;
+  font-size: 0.79rem;
+  font-weight: 800;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.action-group.final-state .decision-lock {
+  width: 100%;
+}
+
+.decision-lock.accepted {
+  color: #1e3a8a;
+  border-color: #bfdbfe;
+  background: linear-gradient(180deg, #eff6ff 0%, #e7f0ff 100%);
+}
+
+.decision-lock.rejected {
+  color: #9f1239;
+  border-color: #fecdd3;
+  background: linear-gradient(180deg, #fff1f5 0%, #ffe6ef 100%);
+}
+
+@media (max-width: 980px) {
+  .applications-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .col-actions,
+  .col-status,
+  .col-date {
+    justify-self: start;
+    text-align: start;
+  }
+
+  .app-row {
+    gap: 10px;
+  }
+
+  .date-cell {
+    font-size: 0.76rem;
+  }
+
+  .action-group {
+    grid-template-columns: 1fr;
+    justify-self: stretch;
+    max-width: none;
+  }
+
+  .decision-lock {
+    min-width: 0;
+    width: 100%;
+  }
+}

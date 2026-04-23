@@ -1,0 +1,211 @@
+<div class="interviews-page">
+  <section class="pipeline-hero">
+    <div class="pipeline-hero-copy">
+      <a routerLink="/employer/jobs" class="back-link">Back to hiring requests</a>
+      <p class="eyebrow">Interview Management</p>
+      <h1>Interview Pipeline</h1>
+      <p>
+        Manage interview lifecycle from scheduled sessions to final hiring decisions using your real hiring request data.
+      </p>
+    </div>
+
+    <div class="pipeline-filters">
+      <label class="pipeline-filter">
+        <span>Status</span>
+        <select [(ngModel)]="statusFilter">
+          <option value="all">All statuses</option>
+          <option value="scheduled">Scheduled</option>
+          <option value="rescheduled">Rescheduled</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </label>
+
+      <label class="pipeline-filter">
+        <span>Search</span>
+        <input type="text" [(ngModel)]="searchTerm" placeholder="Candidate, role, interviewer" />
+      </label>
+    </div>
+  </section>
+
+  <div *ngIf="error" class="message error">{{ error }}</div>
+  <div *ngIf="successMessage" class="message success">{{ successMessage }}</div>
+  <div *ngIf="loading" class="message">Loading interviews...</div>
+
+  <section class="pipeline-stats" *ngIf="!loading && !error">
+    <article class="pipeline-stat scheduled">
+      <p>Scheduled</p>
+      <strong>{{ upcomingCount }}</strong>
+      <small>Confirmed for upcoming rounds</small>
+    </article>
+    <article class="pipeline-stat in-progress">
+      <p>In Process</p>
+      <strong>{{ inProgressCount }}</strong>
+      <small>Scheduled and rescheduled loops</small>
+    </article>
+    <article class="pipeline-stat feedback">
+      <p>Feedback Pending</p>
+      <strong>{{ feedbackPendingCount }}</strong>
+      <small>Completed interviews awaiting decision</small>
+    </article>
+    <article class="pipeline-stat manager">
+      <p>Final Outcomes</p>
+      <strong>{{ passedCount }}</strong>
+      <small>{{ failedCount }} failed • {{ hiringManagerReviewCount }} decided</small>
+    </article>
+  </section>
+
+  <section class="pipeline-layout" *ngIf="!loading && !error">
+    <div class="pipeline-main">
+      <div class="pipeline-main-head">
+        <h2>Upcoming Interviews</h2>
+        <span>{{ filteredInterviews.length }} interview{{ filteredInterviews.length === 1 ? '' : 's' }}</span>
+      </div>
+
+      <div class="interview-list" *ngIf="filteredInterviews.length > 0; else emptyState">
+        <article class="pipeline-row" *ngFor="let interview of filteredInterviews">
+          <div class="candidate-avatar">{{ getInitials(interview.candidateName) }}</div>
+
+          <div class="candidate-copy">
+            <h3>{{ interview.candidateName }}</h3>
+            <p>
+              <a [routerLink]="getJobLink(interview.jobId)" class="job-link">{{ getJobTitle(interview.jobId) }}</a>
+              <span>•</span>
+              <span>{{ interview.type }}</span>
+            </p>
+          </div>
+
+          <div class="candidate-time">
+            <strong>{{ interview.date | date:'mediumDate' }}</strong>
+            <span>{{ interview.time }}</span>
+          </div>
+
+          <div class="candidate-badges">
+            <span [class]="getStatusBadgeClass(interview.status)">{{ getStatusLabel(interview.status) }}</span>
+            <span [class]="getOutcomeBadgeClass(interview.outcome)">{{ getOutcomeLabel(interview.outcome) }}</span>
+          </div>
+
+          <div class="candidate-actions">
+            <button type="button" class="ghost-btn" (click)="openInterviewDetails(interview)">View Details</button>
+            <button type="button" class="primary-btn" (click)="markCompleted(interview.id)" [disabled]="interview.status === 'completed' || interview.status === 'cancelled'">Complete</button>
+            <button type="button" class="primary-btn" (click)="setInterviewOutcome(interview, 'passed')" [disabled]="interview.status === 'cancelled'">Pass</button>
+            <button type="button" class="ghost-btn" (click)="setInterviewOutcome(interview, 'pending')" [disabled]="interview.status === 'cancelled'">Pending</button>
+            <button type="button" class="danger-btn" (click)="setInterviewOutcome(interview, 'failed')" [disabled]="interview.status === 'cancelled'">Fail</button>
+            <button type="button" class="danger-btn" (click)="cancelInterview(interview.id)" [disabled]="interview.status === 'cancelled' || interview.status === 'completed'">Cancel</button>
+          </div>
+        </article>
+      </div>
+
+      <ng-template #emptyState>
+        <div class="message">No interviews match the current filters.</div>
+      </ng-template>
+    </div>
+
+    <aside class="pipeline-side">
+      <article class="decision-card">
+        <div class="side-head">
+          <h3>Final Decisions Needed</h3>
+          <span>{{ decisionQueue.length }} candidates</span>
+        </div>
+
+        <div class="decision-list" *ngIf="decisionQueue.length; else emptyQueue">
+          <button type="button" class="decision-row" *ngFor="let interview of decisionQueue" (click)="openCandidateInReview(interview)">
+            <span class="decision-avatar">{{ getInitials(interview.candidateName) }}</span>
+            <span class="decision-copy">
+              <strong>{{ interview.candidateName }}</strong>
+              <small>{{ getJobTitle(interview.jobId) }}</small>
+            </span>
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+
+        <ng-template #emptyQueue>
+          <div class="side-empty">No pending decisions right now.</div>
+        </ng-template>
+      </article>
+
+      <article class="side-card">
+        <div class="side-head">
+          <h3>Panel Availability</h3>
+        </div>
+
+        <div class="panel-list" *ngIf="interviewerLoad.length; else emptyPanel">
+          <div class="panel-row" *ngFor="let panel of interviewerLoad">
+            <span>{{ panel.name }}</span>
+            <strong>{{ panel.count }}</strong>
+          </div>
+        </div>
+
+        <ng-template #emptyPanel>
+          <div class="side-empty">No interviewer data yet.</div>
+        </ng-template>
+      </article>
+
+      <article class="side-card health-card">
+        <div class="side-head">
+          <h3>Pipeline Health</h3>
+          <strong>{{ pipelineHealthPercent }}%</strong>
+        </div>
+        <p>Completion quality based on completed interviews versus active pipeline load.</p>
+      </article>
+    </aside>
+  </section>
+
+  <div class="interview-details-backdrop" *ngIf="selectedInterview as interview" (click)="trackInterviewDetailsBackdrop($event)">
+    <section class="interview-details-modal">
+      <div class="interview-details-head">
+        <div>
+          <p class="eyebrow">Interview Details</p>
+          <h2>{{ interview.candidateName }}</h2>
+          <p class="interview-details-subtitle">{{ getJobTitle(interview.jobId) }} • {{ interview.type }}</p>
+        </div>
+        <button type="button" class="ghost-btn" (click)="closeInterviewDetails()">Close</button>
+      </div>
+
+      <div class="interview-details-grid">
+        <div class="detail-box">
+          <span>Status</span>
+          <strong>{{ getStatusLabel(interview.status) }}</strong>
+        </div>
+        <div class="detail-box">
+          <span>Outcome</span>
+          <strong>{{ getOutcomeLabel(interview.outcome) }}</strong>
+        </div>
+        <div class="detail-box">
+          <span>Date</span>
+          <strong>{{ interview.date | date:'fullDate' }}</strong>
+        </div>
+        <div class="detail-box">
+          <span>Time</span>
+          <strong>{{ interview.time }}</strong>
+        </div>
+        <div class="detail-box">
+          <span>Interviewer</span>
+          <strong>{{ interview.interviewerName || 'TBD' }}</strong>
+        </div>
+        <div class="detail-box" *ngIf="interview.location">
+          <span>Location</span>
+          <strong>{{ interview.location }}</strong>
+        </div>
+        <div class="detail-box" *ngIf="interview.meetingLink">
+          <span>Meeting Link</span>
+          <a [href]="interview.meetingLink" target="_blank" rel="noreferrer">Open meeting link</a>
+        </div>
+      </div>
+
+      <div class="interview-details-notes" *ngIf="interview.notes">
+        <span>Notes</span>
+        <p>{{ interview.notes }}</p>
+      </div>
+
+      <div class="interview-details-actions">
+        <button type="button" class="ghost-btn" (click)="openJobDetails(interview.jobId)">Open Request Details</button>
+        <button type="button" class="primary-btn" (click)="markCompleted(interview.id); closeInterviewDetails()" [disabled]="interview.status === 'completed' || interview.status === 'cancelled'">Mark Completed</button>
+        <button type="button" class="primary-btn" (click)="setInterviewOutcome(interview, 'passed'); closeInterviewDetails()" [disabled]="interview.status === 'cancelled'">Pass</button>
+        <button type="button" class="ghost-btn" (click)="setInterviewOutcome(interview, 'pending'); closeInterviewDetails()" [disabled]="interview.status === 'cancelled'">Pending</button>
+        <button type="button" class="danger-btn" (click)="setInterviewOutcome(interview, 'failed'); closeInterviewDetails()" [disabled]="interview.status === 'cancelled'">Fail</button>
+        <button type="button" class="danger-btn" (click)="cancelInterview(interview.id); closeInterviewDetails()" [disabled]="interview.status === 'cancelled' || interview.status === 'completed'">Cancel Interview</button>
+      </div>
+    </section>
+  </div>
+</div>

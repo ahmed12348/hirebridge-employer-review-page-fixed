@@ -1,0 +1,62 @@
+<section class="admin-page">
+  <article class="interviews-hero fade-in-up">
+    <div>
+      <p class="db-eyebrow">Interview Pipeline</p>
+      <h1>Interview operations at a glance</h1>
+      <p>
+        Follow pending, scheduled, and completed conversations for sent candidates from one panel.
+      </p>
+    </div>
+
+    <div class="hero-metrics">
+      <article class="metric-card">
+        <span>Scheduled</span>
+        <strong>{{ scheduledCount() }}</strong>
+      </article>
+      <article class="metric-card">
+        <span>Pending</span>
+        <strong>{{ pendingCount() }}</strong>
+      </article>
+      <article class="metric-card">
+        <span>Completed</span>
+        <strong>{{ completedCount() }}</strong>
+      </article>
+    </div>
+  </article>
+
+  <article class="db-panel">
+    <header class="db-panel-head">
+      <div>
+        <p class="db-eyebrow">Interview Pipeline</p>
+        <h2>Sent candidates interview status</h2>
+      </div>
+    </header>
+
+    <div class="db-table" *ngIf="interviews().length; else noInterviews">
+      <div class="db-table-head interviews-grid">
+        <span>ID</span>
+        <span>Candidate</span>
+        <span>Job</span>
+        <span>Date</span>
+        <span>Status</span>
+      </div>
+
+      @for (interview of interviews(); track interview.id) {
+        <article class="db-table-row interviews-grid interview-row">
+          <span class="interview-id">{{ interview.id }}</span>
+          <div class="candidate-cell">
+            <strong>{{ interview.candidateName }}</strong>
+            <small>{{ interview.companyName }}</small>
+          </div>
+          <span>{{ interview.role }}</span>
+          <span>{{ interview.date }}</span>
+          <span [class]="getStatusClass(interview.status)">{{ interview.status }}</span>
+        </article>
+      }
+    </div>
+
+    <ng-template #noInterviews>
+      <div class="db-empty">No interviews available.</div>
+    </ng-template>
+  </article>
+</section>

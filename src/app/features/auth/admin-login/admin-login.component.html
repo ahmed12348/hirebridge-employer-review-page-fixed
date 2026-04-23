@@ -1,0 +1,65 @@
+<div class="auth-shell">
+  <section class="brand-header">
+    <div class="brand-mark">HB</div>
+    <h1>HireBridge</h1>
+    <p>Admin workspace access</p>
+  </section>
+
+  <section class="auth-card">
+    <div class="card-header">
+      <h2>Admin sign in</h2>
+      <p>Please enter admin credentials</p>
+    </div>
+
+    <form (ngSubmit)="submit()" class="form">
+      <div class="field-header">
+        <label for="admin-login-email">Email</label>
+      </div>
+      <div class="field with-icon">
+        <i class="fas fa-at"></i>
+        <input
+          id="admin-login-email"
+          type="email"
+          [(ngModel)]="email"
+          name="email"
+          placeholder="admin@example.com"
+          (blur)="onBlur('email')"
+        />
+      </div>
+      <div class="error" *ngIf="touched['email'] && isEmpty(email)">Email is required</div>
+
+      <div class="field-row">
+        <label for="admin-login-password">Password</label>
+      </div>
+      <div class="field with-icon">
+        <i class="fas fa-lock"></i>
+        <input
+          id="admin-login-password"
+          type="password"
+          [(ngModel)]="password"
+          name="password"
+          placeholder="........"
+          (blur)="onBlur('password')"
+        />
+      </div>
+      <div class="error" *ngIf="touched['password'] && isEmpty(password)">Password is required</div>
+
+      <div class="error" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+      <button type="submit" class="primary-btn" [disabled]="loading">
+        <span *ngIf="!loading">Log In <i class="fas fa-arrow-right"></i></span>
+        <span *ngIf="loading" class="loader"></span>
+      </button>
+    </form>
+  </section>
+
+  <div class="auth-link-row">
+    <span>Need an admin account?</span>
+    <a routerLink="/admin-signup">Create admin account</a>
+  </div>
+
+  <div class="auth-link-row">
+    <span>Back to user login?</span>
+    <a routerLink="/login">Go to login</a>
+  </div>
+</div>

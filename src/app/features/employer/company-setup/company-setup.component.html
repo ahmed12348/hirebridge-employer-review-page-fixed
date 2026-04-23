@@ -1,0 +1,106 @@
+<div class="auth-shell">
+  <section class="brand-header">
+    <div class="brand-mark">HB</div>
+    <h1>HireBridge</h1>
+    <p>Enterprise hiring and career workflows redefined</p>
+  </section>
+
+  <section class="auth-card wide-card">
+    <div class="card-header" *ngIf="!success">
+      <h2>Company setup</h2>
+      <p>Create your company workspace and prepare it for hiring</p>
+    </div>
+
+    <div *ngIf="success" class="success-box">
+      <div class="success-icon"><i class="fas fa-check"></i></div>
+      <h2>Company profile created</h2>
+      <p>Your workspace is ready. Redirecting to verification...</p>
+    </div>
+
+    <form *ngIf="!success" (ngSubmit)="submit()" class="form two-column">
+      <div class="field-block">
+        <label for="company-name">Company Name</label>
+        <div class="field with-icon">
+          <i class="fas fa-building"></i>
+          <input id="company-name" [(ngModel)]="name" name="name" placeholder="Your company name" />
+        </div>
+        <div class="error" *ngIf="submitted && isEmpty(name)">Required</div>
+      </div>
+
+      <div class="field-block">
+        <label for="company-email">Company Email</label>
+        <div class="field with-icon">
+          <i class="fas fa-envelope"></i>
+          <input id="company-email" type="email" [(ngModel)]="CompanyEmail" name="CompanyEmail" placeholder="hr@company.com" />
+        </div>
+        <div class="error" *ngIf="submitted && isEmpty(CompanyEmail)">Required</div>
+      </div>
+
+      <div class="field-block">
+        <label for="company-industry">Industry</label>
+        <div class="field with-icon">
+          <i class="fas fa-layer-group"></i>
+          <input id="company-industry" [(ngModel)]="industry" name="industry" placeholder="Technology" />
+        </div>
+        <div class="error" *ngIf="submitted && isEmpty(industry)">Required</div>
+      </div>
+
+      <div class="field-block">
+        <label for="company-size">Company Size</label>
+        <div class="field with-icon">
+          <i class="fas fa-users"></i>
+          <input id="company-size" type="number" [(ngModel)]="size" name="size" placeholder="150" />
+        </div>
+        <div class="error" *ngIf="submitted && isEmpty(size)">Required</div>
+      </div>
+
+      <div class="field-block">
+        <label for="company-website">Website</label>
+        <div class="field with-icon">
+          <i class="fas fa-globe"></i>
+          <input id="company-website" [(ngModel)]="website" name="website" placeholder="https://company.com" />
+        </div>
+        <div class="error" *ngIf="submitted && isEmpty(website)">Required</div>
+      </div>
+
+      <div class="field-block">
+        <label for="company-logo">Logo URL</label>
+        <div class="field with-icon">
+          <i class="fas fa-image"></i>
+          <input id="company-logo" [(ngModel)]="logo" name="logo" placeholder="https://company.com/logo.png" />
+        </div>
+        <div class="error" *ngIf="submitted && isEmpty(logo)">Required</div>
+      </div>
+
+      <div class="field-block full">
+        <label for="company-budget">Budget Range</label>
+        <div class="field with-icon">
+          <i class="fas fa-money-check-dollar"></i>
+          <input id="company-budget" type="number" [(ngModel)]="budgetRange" name="budgetRange" placeholder="500000" />
+        </div>
+        <div class="error" *ngIf="submitted && isEmpty(budgetRange)">Required</div>
+      </div>
+
+      <div class="field-block full">
+        <div class="error shake" *ngIf="errorMsg">{{ errorMsg }}</div>
+      </div>
+
+      <div class="field-block full">
+        <button type="submit" class="primary-btn" [disabled]="loading">
+          <span *ngIf="!loading">Create Company <i class="fas fa-arrow-right"></i></span>
+          <span *ngIf="loading" class="loader"></span>
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <footer class="page-footer">
+    <span>© 2026 HireBridge. All rights reserved.</span>
+    <nav>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Security</a>
+      <a href="#">Contact Support</a>
+    </nav>
+  </footer>
+</div>
