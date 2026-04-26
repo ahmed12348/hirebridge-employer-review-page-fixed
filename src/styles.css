@@ -28,8 +28,7 @@
 
 html,
 body {
-  min-height: 100%;
-  height: 100%;
+  min-height: 100vh;
 }
 
 body {
@@ -49,6 +48,7 @@ body {
 @media (min-width: 1024px) {
   body {
     zoom: var(--hb-ui-scale);
+    min-height: calc(100vh / var(--hb-ui-scale));
   }
 }
 
@@ -1172,7 +1172,10 @@ textarea:focus {
 }
 
 .auth-shell {
-  zoom: var(--hb-ui-scale);
+  min-height: 100vh !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .verify-email,
@@ -1183,11 +1186,25 @@ textarea:focus {
 .admin-sign-up,
 .login,
 .sign-up {
-  min-height: 100vh;
+  min-height: 100vh !important;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  zoom: var(--hb-ui-scale);
+}
+
+@media (min-width: 1024px) {
+  .auth-shell,
+  .verify-email,
+  .company-verify-email,
+  .candidate-setup,
+  .choose-role,
+  .admin-login,
+  .admin-sign-up,
+  .login,
+  .sign-up {
+    zoom: var(--hb-ui-scale);
+    min-height: calc(100vh / (var(--hb-ui-scale) * var(--hb-ui-scale))) !important;
+  }
 }
 
 .loader {
@@ -1238,7 +1255,7 @@ textarea:focus {
   }
 
   .layout {
-    min-height: calc(100vh / var(--hb-ui-scale));
+    min-height: 100vh;
   }
 
   .sidebar {
@@ -1246,7 +1263,7 @@ textarea:focus {
   }
 
   .content {
-    min-height: calc((100vh / var(--hb-ui-scale)) - 80px);
+    min-height: calc(100vh - 80px);
   }
 
   .layout {
@@ -1326,9 +1343,6 @@ textarea:focus {
     grid-template-columns: 1fr;
   }
 
-  .auth-shell {
-    zoom: 1;
-  }
 
   .openings-head,
   .table-head {
@@ -1355,4 +1369,3 @@ textarea:focus {
     display: none;
   }
 }
-
