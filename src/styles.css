@@ -29,6 +29,7 @@
 html,
 body {
   min-height: 100%;
+  height: 100%;
 }
 
 body {
@@ -1171,7 +1172,22 @@ textarea:focus {
 }
 
 .auth-shell {
-  zoom: 1;
+  zoom: var(--hb-ui-scale);
+}
+
+.verify-email,
+.company-verify-email,
+.candidate-setup,
+.choose-role,
+.admin-login,
+.admin-sign-up,
+.login,
+.sign-up {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  zoom: var(--hb-ui-scale);
 }
 
 .loader {
