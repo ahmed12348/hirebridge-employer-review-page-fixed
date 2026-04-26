@@ -137,8 +137,15 @@ export class EmployerJobsService {
       return throwError(() => new Error('Unauthorized'));
     }
 
-    // Create and cache the fetch observable
-    this.companyIdCache$ = this.fetchCompanyIdFromApi(authToken)
+    const tokenCompanyId = this.extractCompanyIdFromToken(authToken);
+
+    if (tokenCompanyId) {
+      localStorage.setItem('companyId', tokenCompanyId);
+      this.companyIdCache$ = of(tokenCompanyId).pipe(shareReplay(1));
+      return this.companyIdCache$;
+    }
+
+    this.companyIdCache$ = this.resolveCompanyIdFromKnownSources(authToken)
       .pipe(
         map(resolvedId => {
           localStorage.setItem('companyId', resolvedId);
@@ -438,41 +445,14 @@ export class EmployerJobsService {
       );
   }
 
-  private fetchCompanyIdFromApi(authToken: string, index = 0): Observable<string> {
-    const endpoints = [
-      `${this.baseUrl}/company/myCompany`,
-      `${this.baseUrl}/company/getCompanyToStoreIdInLocalStorage`,
-      `${this.baseUrl}/job/getCompanyToStoreIdInLocalStorage`,
-      `${this.baseUrl}/company/get-company-to-store-id`,
-      `${this.baseUrl}/job/get-the-company-to-store-id-in-localStorage`,
-      `${this.baseUrl}/company/get-the-company-to-store-id-in-localStorage`,
-      `${this.baseUrl}/job/get-company-to-store-id`
-    ];
+  private resolveCompanyIdFromKnownSources(authToken: string): Observable<string> {
+    const tokenCompanyId = this.extractCompanyIdFromToken(authToken);
 
-    if (index >= endpoints.length) {
-      const tokenCompanyId = this.extractCompanyIdFromToken(authToken);
-
-      if (tokenCompanyId) {
-        return of(tokenCompanyId);
-      }
-
-      return throwError(() => new Error('Company ID missing'));
+    if (tokenCompanyId) {
+      return of(tokenCompanyId);
     }
 
-    return this.http.get<unknown>(endpoints[index], {
-      headers: new HttpHeaders({ auth: authToken })
-    }).pipe(
-      map(response => {
-        const resolvedId = this.extractCompanyIdFromResponse(response);
-
-        if (!resolvedId) {
-          throw new Error('Company ID missing');
-        }
-
-        return resolvedId;
-      }),
-      catchError(() => this.fetchCompanyIdFromApi(authToken, index + 1))
-    );
+    return throwError(() => new Error('Company ID missing'));
   }
 
   private fetchJobsByCompanyFromEndpoints(

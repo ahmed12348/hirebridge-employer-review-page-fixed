@@ -67,7 +67,12 @@ export class CompanyService {
       return this.companyProfileCache$;
     }
 
-    const companyId = localStorage.getItem('companyId');
+    const companyId = this.extractObjectId(localStorage.getItem('companyId'));
+
+    if (!companyId) {
+      this.companyProfileCache$ = of(this.companyProfileSubject.value).pipe(shareReplay(1));
+      return this.companyProfileCache$;
+    }
 
     // 🔥 First try new endpoint with company ID
     let request$ = this.http.get<unknown>(
@@ -102,8 +107,14 @@ export class CompanyService {
   }
 
   updateCompanyProfile(profile: CompanyProfile): Observable<CompanyProfile> {
-    const companyId = localStorage.getItem('companyId');
+    const companyId = this.extractObjectId(localStorage.getItem('companyId'));
     const token = String(localStorage.getItem('token') || localStorage.getItem('authToken') || '').trim();
+
+    if (!companyId) {
+      this.companyProfileSubject.next(profile);
+      this.companyProfileCache$ = null;
+      return of(profile);
+    }
 
     // Send update to API
     return this.http.put<unknown>(
@@ -181,5 +192,10 @@ export class CompanyService {
 
   private asString(value: unknown): string {
     return typeof value === 'string' ? value : '';
+  }
+
+  private extractObjectId(value: unknown): string {
+    const normalized = String(value || '').trim();
+    return /^[a-fA-F0-9]{24}$/.test(normalized) ? normalized : '';
   }
 }

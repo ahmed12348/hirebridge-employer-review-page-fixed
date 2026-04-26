@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -85,60 +84,24 @@ export class AuthService {
 
   fetchAndStoreCompanyId(): Observable<string | null> {
     const token = localStorage.getItem('authToken') || localStorage.getItem('token') || '';
+    const storedCompanyId = this.extractCompanyId(localStorage.getItem('companyId'));
+
+    if (storedCompanyId) {
+      return of(storedCompanyId);
+    }
 
     if (!token) {
       return of(null);
     }
 
-    return this.fetchCompanyIdFromApi(token)
-      .pipe(
-        map(companyId => {
-          localStorage.setItem('companyId', companyId);
-          return companyId;
-        }),
-        catchError(() => {
-          localStorage.removeItem('companyId');
-          return of(null);
-        })
-      );
-  }
+    const tokenCompanyId = this.extractCompanyIdFromToken(token);
 
-  private fetchCompanyIdFromApi(token: string, index = 0): Observable<string> {
-    const endpoints = [
-      `${this.baseUrl}/company/myCompany`,
-      `${this.baseUrl}/company/getCompanyToStoreIdInLocalStorage`,
-      `${this.baseUrl}/job/getCompanyToStoreIdInLocalStorage`,
-      `${this.baseUrl}/company/get-company-to-store-id`,
-      `${this.baseUrl}/job/get-the-company-to-store-id-in-localStorage`,
-      `${this.baseUrl}/company/get-the-company-to-store-id-in-localStorage`,
-      `${this.baseUrl}/job/get-company-to-store-id`
-    ];
-
-    if (index >= endpoints.length) {
-      const tokenCompanyId = this.extractCompanyIdFromToken(token);
-
-      if (tokenCompanyId) {
-        return of(tokenCompanyId);
-      }
-
-      return throwError(() => new Error('Company ID missing'));
+    if (tokenCompanyId) {
+      localStorage.setItem('companyId', tokenCompanyId);
+      return of(tokenCompanyId);
     }
 
-    return this.http
-      .get<unknown>(endpoints[index], {
-        headers: new HttpHeaders({ auth: token })
-      })
-      .pipe(
-        map(response => this.extractCompanyId(response)),
-        map(companyId => {
-          if (!companyId) {
-            throw new Error('Company ID missing');
-          }
-
-          return companyId;
-        }),
-        catchError(() => this.fetchCompanyIdFromApi(token, index + 1))
-      );
+    return of(null);
   }
 
   private extractCompanyId(response: unknown): string {
