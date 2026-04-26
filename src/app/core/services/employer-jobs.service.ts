@@ -418,7 +418,8 @@ export class EmployerJobsService {
     }
 
     const endpoints = [
-      `${this.baseUrl}/company/getSpecificCompanyJobs/${normalizedCompanyId}`
+      `${this.baseUrl}/company/getSpecificCompanyJobs/${normalizedCompanyId}`,
+      `${this.baseUrl}/job/getSpecificCompanyJobs/${normalizedCompanyId}`
     ];
 
     return this.fetchJobsByCompanyFromEndpoints(endpoints, options)
@@ -446,6 +447,12 @@ export class EmployerJobsService {
 
   private fetchCompanyIdFromApi(authToken: string, index = 0): Observable<string> {
     const endpoints = [
+      `${this.baseUrl}/company/myCompany`,
+      `${this.baseUrl}/company/getCompanyToStoreIdInLocalStorage`,
+      `${this.baseUrl}/job/getCompanyToStoreIdInLocalStorage`,
+      `${this.baseUrl}/company/get-company-to-store-id`,
+      `${this.baseUrl}/job/get-the-company-to-store-id-in-localStorage`,
+      `${this.baseUrl}/company/get-the-company-to-store-id-in-localStorage`,
       `${this.baseUrl}/job/get-company-to-store-id`
     ];
 
