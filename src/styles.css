@@ -466,10 +466,10 @@ p {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 38%);
 }
 
-.hero-card > *,
-.hero-panel > *,
-.surface-card > *,
-.panel-card > * {
+.hero-card>*,
+.hero-panel>*,
+.surface-card>*,
+.panel-card>* {
   position: relative;
   z-index: 1;
 }
@@ -1068,9 +1068,9 @@ h3 {
   gap: 6px;
 }
 
-.field > span,
-.form-field > span,
-.field-block > label {
+.field>span,
+.form-field>span,
+.field-block>label {
   color: #334155;
   font-size: 0.88rem;
   font-weight: 700;
@@ -1355,4 +1355,3 @@ textarea:focus {
     display: none;
   }
 }
-
